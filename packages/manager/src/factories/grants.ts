@@ -29,13 +29,6 @@ export const grantsFactory = Factory.Sync.makeFactory<Grants>({
       permissions: 'read_only',
     },
   ],
-  vpc: [
-    {
-      id: 123,
-      label: 'example-entity',
-      permissions: 'read_only',
-    },
-  ],
   global: {
     account_access: 'read_write',
     add_domains: true,

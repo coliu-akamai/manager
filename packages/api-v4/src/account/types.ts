@@ -45,7 +45,8 @@ export type AccountCapability =
   | 'Vlans'
   | 'Machine Images'
   | 'LKE HA Control Planes'
-  | 'Managed Databases';
+  | 'Managed Databases'
+  | 'VPCs';
 
 export interface AccountSettings {
   managed: boolean;
@@ -163,8 +164,7 @@ export type GrantType =
   | 'stackscript'
   | 'volume'
   | 'database'
-  | 'firewall'
-  | 'vpc'; // TODO: VPC - check if this grant will be added
+  | 'firewall';
 
 export type Grants = GlobalGrants & Record<GrantType, Grant[]>;
 

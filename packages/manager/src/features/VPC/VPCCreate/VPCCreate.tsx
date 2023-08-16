@@ -23,7 +23,7 @@ import { LandingHeader } from 'src/components/LandingHeader';
 import { Paper } from 'src/components/Paper';
 import { Typography } from 'src/components/Typography';
 import { ActionsPanel } from 'src/components/ActionsPanel/ActionsPanel';
-import { handleAPIErrors } from 'src/utilities/formikErrorUtils';
+import { handleAPIErrors, convertVpcApiErrors } from 'src/utilities/formikErrorUtils';
 import { SubnetFieldState } from 'src/utilities/subnets';
 import { MultipleSubnetInput } from './MultipleSubnetInput';
 
@@ -54,7 +54,7 @@ const VPCCreate = () => {
   };
 
   const validateVPCSubnets = () => {
-    return false;
+    return true;
   };
 
   const onCreateVPC = async () => {
@@ -75,6 +75,7 @@ const VPCCreate = () => {
       const response = await createVPC(createVPCPayload);
       history.push(`/vpc/${response.id}`);
     } catch (errors) {
+      console.log("these are the api errors attempt 1", convertVpcApiErrors(errors, setFieldError));
       const apiSubnetErrors = errors.filter(
         (error: APIError) => error.field === 'subnets'
       );

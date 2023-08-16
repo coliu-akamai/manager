@@ -75,21 +75,22 @@ export interface SubnetError {
 
 
 // this is janky and i am not a fan
-// relies on the assumption that api will return subnet errors in order...
+
 export const convertVpcApiErrors = (errors: APIError[], setFieldError: (field: string, message: string) => void, setError?: (message: string) => void) => {
-  const subnetErrors: SubnetError[] = [];
+  const subnetErrors = {};
   let subnetErrorBuilder: SubnetError = {};
   let curSubnetIndex = 0;
+  let idx;
 
   for (let i = 0; i < errors.length; i++) {
     let error: APIError = errors[i];
     if (error.field) {
       if (error.field.includes("subnets[")) {
         const keys = error.field.split('.');
-        const idx = parseInt(keys[0].substring(keys[0].indexOf("[") + 1, keys[0].indexOf("]")));
+        idx = parseInt(keys[0].substring(keys[0].indexOf("[") + 1, keys[0].indexOf("]")));
         if (idx !== curSubnetIndex) {
-          subnetErrors.push(subnetErrorBuilder);
-          curSubnetIndex++;
+          subnetErrors[curSubnetIndex] = (subnetErrorBuilder);
+          curSubnetIndex = idx;
           subnetErrorBuilder = {}
           console.log('do we ever get here')
         }
@@ -101,8 +102,8 @@ export const convertVpcApiErrors = (errors: APIError[], setFieldError: (field: s
     }
   }
 
-  if ((subnetErrors.length > 0 && Object.keys(subnetErrorBuilder).length === 0) || subnetErrors[subnetErrors.length - 1] !== subnetErrorBuilder) {
-    subnetErrors.push(subnetErrorBuilder);
+  if(idx && !subnetErrors[idx] && Object.keys(subnetErrorBuilder).length !== 0) {
+    subnetErrors[idx] = subnetErrorBuilder;
   }
 
   return subnetErrors;

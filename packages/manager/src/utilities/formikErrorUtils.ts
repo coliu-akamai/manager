@@ -87,7 +87,7 @@ export interface SubnetError {
  * @param setError function to set (non subnet related) general API errors
  * @returns @interface SubnetError[], where subnets with no associated errors will be represented as {}
  */
-export const convertVpcApiErrors = (
+export const convertVpcSubnetApiErrors = (
   errors: APIError[],
   numSubnets: number,
   setFieldError: (field: string, message: string) => void,
@@ -113,13 +113,18 @@ export const convertVpcApiErrors = (
 
 /**
  * Returns a map of subnets to their @interface SubnetError, using known indexes
- * Example: errors = [{ reason: 'error', field: 'subnets[1].label' },
- *                    { reason: 'error', field: 'subnets[1].ipv4' },
- *                    { reason: 'error', field: 'subnets[4].ipv4' }]
+ * Example: errors = [{ reason: 'error1', field: 'subnets[1].label' },
+ *                    { reason: 'error2', field: 'subnets[1].ipv4' },
+ *                    { reason: 'error3', field: 'subnets[4].ipv4' }]
  * returns: {
- *            1: { label: 'error', ipv4: 'error' },
- *            4: { ipv4: 'error'}
+ *            0: {},
+ *            1: { label: 'error1', ipv4: 'error2' },
+ *            4: { ipv4: 'error3'}
  *          }
+ * ** If subnet[0] has no errors, this function inserts an empty object into the return
+ * object -- this is ok, as @function convertVpcApiErrors will do this for all subnets
+ * without associated errors anyway. If subnet[0] does have errors based on the error array,
+ * they will be reflected in this function's return object.
  */
 const handleVpcAndConvertSubnetErrors = (
   errors: APIError[],

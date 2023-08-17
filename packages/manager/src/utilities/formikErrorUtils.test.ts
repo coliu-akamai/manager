@@ -1,4 +1,4 @@
-import { handleAPIErrors, convertVpcApiErrors } from './formikErrorUtils';
+import { handleAPIErrors, convertVpcSubnetApiErrors } from './formikErrorUtils';
 
 const errorWithoutField = [{ reason: 'Internal server error' }];
 const errorWithField = [
@@ -73,7 +73,7 @@ const subnetsWithWithoutErrors = [
 
 describe('convertVpcApiErrors', () => {
   it('converts API errors for subnets into array of SubnetErrors', () => {
-    const errors = convertVpcApiErrors(
+    const errors = convertVpcSubnetApiErrors(
       subnetsWithWithoutErrors,
       5,
       setFieldError,
@@ -94,7 +94,7 @@ describe('convertVpcApiErrors', () => {
   });
 
   it('takes the last error to display if a subnet field has multiple errors associated with it', () => {
-    const errors = convertVpcApiErrors(
+    const errors = convertVpcSubnetApiErrors(
       subnetMultipleErrorsPerField,
       2,
       setFieldError,
@@ -108,7 +108,7 @@ describe('convertVpcApiErrors', () => {
   });
 
   it('returns an array of objects the length of the number of subnets passed in', () => {
-    const errors = convertVpcApiErrors(
+    const errors = convertVpcSubnetApiErrors(
       errorWithField,
       10,
       setFieldError,
@@ -119,7 +119,7 @@ describe('convertVpcApiErrors', () => {
       expect(Object.keys(error)).toHaveLength(0);
     });
 
-    const badCall = convertVpcApiErrors(
+    const badCall = convertVpcSubnetApiErrors(
       errorWithField,
       -1,
       setFieldError,
@@ -129,7 +129,7 @@ describe('convertVpcApiErrors', () => {
   });
 
   it('passes errors without the subnet field to handleApiErrors', () => {
-    const errors = convertVpcApiErrors(
+    const errors = convertVpcSubnetApiErrors(
       errorWithField,
       0,
       setFieldError,

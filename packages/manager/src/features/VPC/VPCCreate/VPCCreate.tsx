@@ -24,7 +24,7 @@ import { Paper } from 'src/components/Paper';
 import { ActionsPanel } from 'src/components/ActionsPanel/ActionsPanel';
 import {
   SubnetError,
-  convertVpcApiErrors,
+  convertVpcSubnetApiErrors,
 } from 'src/utilities/formikErrorUtils';
 import { SubnetFieldState } from 'src/utilities/subnets';
 import { MultipleSubnetInput } from './MultipleSubnetInput';
@@ -84,7 +84,7 @@ const VPCCreate = () => {
       const response = await createVPC(createVPCPayload);
       history.push(`/vpc/${response.id}`);
     } catch (errors) {
-      const indivSubnetErrors = convertVpcApiErrors(
+      const indivSubnetErrors = convertVpcSubnetApiErrors(
         errors,
         values.subnets.length,
         setFieldError

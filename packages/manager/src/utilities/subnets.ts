@@ -1,7 +1,14 @@
+interface SubnetIP {
+  ipv4?: string;
+  ipv4Error?: string;
+  ipv6?: string;
+  ipv6Error?: string;
+}
+
 export interface SubnetFieldState {
   label: string;
-  ipv4?: string;
-  ipv6?: string;
+  labelError?: string;
+  ip: SubnetIP;
 }
 
 export type SubnetIpType = 'ipv4' | 'ipv6';
@@ -60,4 +67,3 @@ export const calculateAvailableIpv4s = (
 
   return SubnetMaskToAvailIPv4s[mask];
 };
-

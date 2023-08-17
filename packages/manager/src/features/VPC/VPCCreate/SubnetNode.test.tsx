@@ -12,8 +12,7 @@ describe('SubnetNode', () => {
         disabled={false}
         idx={0}
         onChange={() => {}}
-        subnet={{ label: '', ipv4: '' }}
-        subnetError={{ label: [], ipv4: [], ipv6: [] }}
+        subnet={{ label: '', ip: { ipv4: '' } }}
       />
     );
     const subnetAddress = screen.getAllByTestId('textfield-input');
@@ -31,8 +30,7 @@ describe('SubnetNode', () => {
         disabled={false}
         idx={0}
         onChange={() => {}}
-        subnet={{ label: '', ipv4: ''}}
-        subnetError={{ label: [], ipv4: [], ipv6: [] }}
+        subnet={{ label: '', ip: { ipv4: '' } }}
       />
     );
     const subnetAddress = screen.getAllByTestId('textfield-input');

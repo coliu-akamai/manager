@@ -6,25 +6,21 @@ import { Divider } from 'src/components/Divider';
 import { Button } from 'src/components/Button/Button';
 import { SubnetFieldState } from 'src/utilities/subnets';
 import { SubnetNode } from './SubnetNode';
-import { SubnetError } from 'src/utilities/formikErrorUtils';
 
 interface Props {
   subnets: SubnetFieldState[];
   onChange: (subnets: SubnetFieldState[]) => void;
   disabled?: boolean;
-  subnetErrors: SubnetError[];
 }
-
-const EMPTY_SUBNET_ERROR: SubnetError = { label: [], ipv4: [], ipv6: [] };
 
 export const MultipleSubnetInput = (props: Props) => {
   const theme = useTheme();
-  const { subnets, subnetErrors, onChange, disabled } = props;
+  const { subnets, onChange, disabled } = props;
 
   const addSubnet = () => {
     onChange([
       ...subnets,
-      { label: '', ipv4: '' },
+      { label: '', labelError: '', ip: { ipv4: '', ipv4Error: '' } },
     ]);
   };
 
@@ -50,7 +46,6 @@ export const MultipleSubnetInput = (props: Props) => {
           <SubnetNode
             idx={subnetIdx}
             subnet={subnet}
-            subnetError={subnetIdx < subnetErrors.length ? subnetErrors[subnetIdx] : EMPTY_SUBNET_ERROR}
             disabled={disabled}
             // janky solution to enable SubnetNode to work on its own or be part of MultipleSubnetInput
             onChange={(subnet, subnetIdx, removable) =>

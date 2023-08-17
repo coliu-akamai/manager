@@ -22,7 +22,10 @@ import { DocumentTitleSegment } from 'src/components/DocumentTitle';
 import { LandingHeader } from 'src/components/LandingHeader';
 import { Paper } from 'src/components/Paper';
 import { ActionsPanel } from 'src/components/ActionsPanel/ActionsPanel';
-import { SubnetError, convertVpcApiErrors } from 'src/utilities/formikErrorUtils';
+import {
+  SubnetError,
+  convertVpcApiErrors,
+} from 'src/utilities/formikErrorUtils';
 import { SubnetFieldState } from 'src/utilities/subnets';
 import { MultipleSubnetInput } from './MultipleSubnetInput';
 import {
@@ -40,19 +43,32 @@ const VPCCreate = () => {
   const [overallSubnetErrors, setOverallSubnetErrors] = React.useState<
     APIError[]
   >();
-  const [individualSubnetErrors, setIndividualSubnetErrors] = React.useState<SubnetError[]>([]);
 
   const disabled = profile?.restricted && !grants?.global.add_vpcs;
 
   const createSubnetsPayload = () => {
     const subnetPayloads: CreateSubnetPayload[] = [];
-
     for (const subnetState of values.subnets) {
-      const { label, ipv4 } = subnetState;
-      subnetPayloads.push({ label: label, ipv4: ipv4});
+      const { label, ip } = subnetState;
+      subnetPayloads.push({ label: label, ipv4: ip.ipv4 });
     }
-
     return subnetPayloads;
+  };
+
+  const combineErrorsAndSubnets = (
+    subnets: SubnetFieldState[],
+    errors: SubnetError[]
+  ) => {
+    const combinedSubnets: SubnetFieldState[] = [];
+    for (let i = 0; i < subnets.length; i++) {
+      const subnet = {
+        label: subnets[i].label,
+        labelError: errors[i].label ?? '',
+        ip: { ...subnets[i].ip, ipv4Error: errors[i].ipv4 ?? '' },
+      };
+      combinedSubnets.push(subnet);
+    }
+    return combinedSubnets;
   };
 
   const onCreateVPC = async () => {
@@ -68,14 +84,22 @@ const VPCCreate = () => {
       const response = await createVPC(createVPCPayload);
       history.push(`/vpc/${response.id}`);
     } catch (errors) {
-      const indivSubnetErrors = convertVpcApiErrors(errors, values.subnets.length, setFieldError);
-      setIndividualSubnetErrors(indivSubnetErrors);
-      console.log("these are the api errors attempt 1", indivSubnetErrors);
-      const overallSubnetERrorsFromAPI = errors.filter(
+      const indivSubnetErrors = convertVpcApiErrors(
+        errors,
+        values.subnets.length,
+        setFieldError
+      );
+      // must combine errors and subnet data to avoid indexing weirdness when deleting a subnet
+      const subnetsAndErrors = combineErrorsAndSubnets(
+        values.subnets,
+        indivSubnetErrors
+      );
+      setFieldValue('subnets', subnetsAndErrors);
+      const overallSubnetErrorsFromAPI = errors.filter(
         (error: APIError) => error.field === 'subnets'
       );
-      if (overallSubnetERrorsFromAPI) {
-        setOverallSubnetErrors(overallSubnetERrorsFromAPI);
+      if (overallSubnetErrorsFromAPI) {
+        setOverallSubnetErrors(overallSubnetErrorsFromAPI);
       }
     }
 
@@ -95,7 +119,11 @@ const VPCCreate = () => {
       subnets: [
         {
           label: '',
-          ipv4: '',
+          labelError: '',
+          ip: {
+            ipv4: '',
+            ipv4Error: '',
+          },
         },
       ] as SubnetFieldState[],
       label: '',
@@ -191,7 +219,6 @@ const VPCCreate = () => {
               disabled={disabled}
               onChange={(subnets) => setFieldValue('subnets', subnets)}
               subnets={values.subnets}
-              subnetErrors={individualSubnetErrors}
             />
           </Paper>
           <ActionsPanel

@@ -82,7 +82,7 @@ export interface SubnetError {
  * @param errors the errors from the API
  * @param numSubnets the number of subnets there are in total.
  *        Assumption: numSubnets >= 1 + the highest indexed subnet from @param errors
- *        ex: numSubnets = 10, then the highest indexed subnet in errors should be subnet[9]
+ *        ex: numSubnets = 10, then the highest indexed subnet in errors should be at most subnet[9]
  * @param setFieldError function to set non subnet related field errors
  * @param setError function to set (non subnet related) general API errors
  * @returns @interface SubnetError[], where subnets with no associated errors will be represented as {}

@@ -68,18 +68,25 @@ export const handleAPIErrors = (
 };
 
 export interface SubnetError {
-  // string[] bc each field can have multiple errors associated with it...
   label?: string;
   ipv4?: string;
   ipv6?: string;
 }
 
-// this is janky and i am not a fan
-// idea: handle vpc errors and create a list of errors associated with each subnet
-// for subnets with no errors, they'll have an object with empty error arrays
-// each subnet will have an associated subnetError
-// this kinda creates a parallel mapping which isn't great,
-// but there also just aren't many great solutions imo
+/**
+ * Handles given API errors and converts any subnet related errors into a usable format
+ *
+ * (Creates a parallel mapping of @interface SubnetError to @interface SubnetFieldState which
+ * isn't great, but there also just aren't many great solutions imo)
+ *
+ * @param errors the errors from the API
+ * @param numSubnets the number of subnets there are in total.
+ *        Assumption: numSubnets >= 1 + the highest indexed subnet from @param errors
+ *        ex: numSubnets = 10, then the highest indexed subnet in errors should be subnet[9]
+ * @param setFieldError function to set non subnet related field errors
+ * @param setError function to set (non subnet related) general API errors
+ * @returns @interface SubnetError[], where subnets with no associated errors will be represented as {}
+ */
 export const convertVpcApiErrors = (
   errors: APIError[],
   numSubnets: number,
@@ -92,7 +99,8 @@ export const convertVpcApiErrors = (
     setFieldError,
     setError
   );
-  for (let i = 0; i < numSubnets ?? 0; i++) {
+
+  for (let i = 0; i < numSubnets; i++) {
     if (convertedErrors[i]) {
       vpcSubnetErrors.push(convertedErrors[i]);
     } else {
@@ -103,9 +111,16 @@ export const convertVpcApiErrors = (
   return vpcSubnetErrors;
 };
 
-// idea: handle vpc errors not related to subnets normally
-// for subnet errors: convert to map/object of subnet's index: associated errors
-// return this object
+/**
+ * Returns a map of subnets to their @interface SubnetError, using known indexes
+ * Example: errors = [{ reason: 'error', field: 'subnets[1].label' },
+ *                    { reason: 'error', field: 'subnets[1].ipv4' },
+ *                    { reason: 'error', field: 'subnets[4].ipv4' }]
+ * returns: {
+ *            1: { label: 'error', ipv4: 'error' },
+ *            4: { ipv4: 'error'}
+ *          }
+ */
 const handleVpcAndConvertSubnetErrors = (
   errors: APIError[],
   setFieldError: (field: string, message: string) => void,
@@ -119,12 +134,13 @@ const handleVpcAndConvertSubnetErrors = (
   for (let i = 0; i < errors.length; i++) {
     const error: APIError = errors[i];
     if (error.field && error.field.includes('subnets[')) {
-      const keys = error.field.split('.');
-      const field = keys[keys.length - 1];
+      const [subnetIdx, field] = error.field.split('.');
       idx = parseInt(
-        keys[0].substring(keys[0].indexOf('[') + 1, keys[0].indexOf(']')),
+        subnetIdx.substring(subnetIdx.indexOf('[') + 1, subnetIdx.indexOf(']')),
         10
       );
+      // now that we're on a new idx, we store the previous
+      // SubnetError, and start building a new one
       if (idx !== curSubnetIndex) {
         subnetErrors[curSubnetIndex] = subnetErrorBuilder;
         curSubnetIndex = idx;
@@ -136,6 +152,8 @@ const handleVpcAndConvertSubnetErrors = (
     }
   }
 
+  // check to ensure that if a SubnetError was built but
+  // wasn't added in the for loop above, it gets included
   if (idx !== undefined && !subnetErrors[idx]) {
     subnetErrors[idx] = subnetErrorBuilder;
   }

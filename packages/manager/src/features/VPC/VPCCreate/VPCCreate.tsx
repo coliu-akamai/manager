@@ -22,7 +22,7 @@ import { DocumentTitleSegment } from 'src/components/DocumentTitle';
 import { LandingHeader } from 'src/components/LandingHeader';
 import { Paper } from 'src/components/Paper';
 import { ActionsPanel } from 'src/components/ActionsPanel/ActionsPanel';
-import { handleAPIErrors, convertVpcApiErrors } from 'src/utilities/formikErrorUtils';
+import { SubnetError, convertVpcApiErrors } from 'src/utilities/formikErrorUtils';
 import { SubnetFieldState } from 'src/utilities/subnets';
 import { MultipleSubnetInput } from './MultipleSubnetInput';
 import {
@@ -37,9 +37,10 @@ const VPCCreate = () => {
   const { data: grants } = useGrants();
   const { data: regions } = useRegionsQuery();
   const { isLoading, mutateAsync: createVPC } = useCreateVPCMutation();
-  const [subnetErrorsFromAPI, setSubnetErrorsFromAPI] = React.useState<
+  const [overallSubnetErrors, setOverallSubnetErrors] = React.useState<
     APIError[]
   >();
+  const [individualSubnetErrors, setIndividualSubnetErrors] = React.useState<SubnetError[]>([]);
 
   const disabled = profile?.restricted && !grants?.global.add_vpcs;
 
@@ -47,26 +48,15 @@ const VPCCreate = () => {
     const subnetPayloads: CreateSubnetPayload[] = [];
 
     for (const subnetState of values.subnets) {
-      const { label, ip } = subnetState;
-      if (ip.ipv4 || label) {
-        subnetPayloads.push({ label: label, ipv4: ip.ipv4 });
-      }
+      const { label, ipv4 } = subnetState;
+      subnetPayloads.push({ label: label, ipv4: ipv4});
     }
 
     return subnetPayloads;
   };
 
-  const validateVPCSubnets = () => {
-    return true;
-  };
-
   const onCreateVPC = async () => {
-    if (!validateVPCSubnets()) {
-      return;
-    }
-
     setSubmitting(true);
-
     const subnetsPayload = createSubnetsPayload();
 
     const createVPCPayload: CreateVPCPayload = {
@@ -78,14 +68,15 @@ const VPCCreate = () => {
       const response = await createVPC(createVPCPayload);
       history.push(`/vpc/${response.id}`);
     } catch (errors) {
-      console.log("these are the api errors attempt 1", convertVpcApiErrors(errors, setFieldError));
-      const apiSubnetErrors = errors.filter(
+      const indivSubnetErrors = convertVpcApiErrors(errors, values.subnets.length, setFieldError);
+      setIndividualSubnetErrors(indivSubnetErrors);
+      console.log("these are the api errors attempt 1", indivSubnetErrors);
+      const overallSubnetERrorsFromAPI = errors.filter(
         (error: APIError) => error.field === 'subnets'
       );
-      if (apiSubnetErrors) {
-        setSubnetErrorsFromAPI(apiSubnetErrors);
+      if (overallSubnetERrorsFromAPI) {
+        setOverallSubnetErrors(overallSubnetERrorsFromAPI);
       }
-      handleAPIErrors(errors, setFieldError);
     }
 
     setSubmitting(false);
@@ -104,8 +95,7 @@ const VPCCreate = () => {
       subnets: [
         {
           label: '',
-          labelError: '',
-          ip: { ipv4: '', ipv4Error: '' },
+          ipv4: '',
         },
       ] as SubnetFieldState[],
       label: '',
@@ -192,8 +182,8 @@ const VPCCreate = () => {
               <Link to="#"> Learn more</Link>.
               {/* TODO: VPC - subnet learn more link here */}
             </StyledBodyTypography>
-            {subnetErrorsFromAPI
-              ? subnetErrorsFromAPI.map((apiError: APIError) => (
+            {overallSubnetErrors
+              ? overallSubnetErrors.map((apiError: APIError) => (
                   <Notice error key={apiError.reason} text={apiError.reason} />
                 ))
               : null}
@@ -201,6 +191,7 @@ const VPCCreate = () => {
               disabled={disabled}
               onChange={(subnets) => setFieldValue('subnets', subnets)}
               subnets={values.subnets}
+              subnetErrors={individualSubnetErrors}
             />
           </Paper>
           <ActionsPanel

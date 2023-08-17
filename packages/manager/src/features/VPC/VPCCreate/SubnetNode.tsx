@@ -9,6 +9,7 @@ import { SubnetFieldState } from 'src/utilities/subnets';
 import { FormHelperText } from 'src/components/FormHelperText';
 import { determineIPType } from '@linode/validation';
 import { calculateAvailableIpv4s } from 'src/utilities/subnets';
+import { SubnetError } from 'src/utilities/formikErrorUtils';
 
 interface Props {
   disabled?: boolean;
@@ -22,13 +23,15 @@ interface Props {
   ) => void;
   removable?: boolean;
   subnet: SubnetFieldState;
+  subnetError: SubnetError;
 }
 
 const RESERVED_IP_NUMBER = 4;
 
 // TODO: VPC - currently only supports IPv4, must update when/if IPv6 is also supported
 export const SubnetNode = (props: Props) => {
-  const { disabled, idx, onChange, subnet, removable } = props;
+  const { disabled, idx, onChange, subnet, removable, subnetError } = props;
+  const { label: labelErrors, ipv4: ipv4Errors } = subnetError;
   const [availIps, setAvailIps] = React.useState<number | undefined>(undefined);
 
   const onLabelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,25 +70,31 @@ export const SubnetNode = (props: Props) => {
             label="Subnet label"
             onChange={onLabelChange}
             value={subnet.label}
-            errorText={subnet.labelError}
           />
+          {labelErrors.length > 0
+            ? labelErrors.map((subnetError) => (
+              <FormHelperText sx={{ color: '#ca0813'}} key={subnetError} >{subnetError}</FormHelperText> 
+              ))
+          : null}
         </Grid>
-        {removable && !!idx && (
-          <Grid xs={1}>
-            <StyledButton onClick={removeSubnet}>
-              <Close data-testid={`delete-subnet-${idx}`} />
-            </StyledButton>
-          </Grid>
-        )}
+        <Grid xs={1}>
+          <StyledButton onClick={removeSubnet}>
+            <Close data-testid={`delete-subnet-${idx}`} />
+          </StyledButton>
+        </Grid>
       </Grid>
       <Grid xs={removable ? 11 : 12}>
         <TextField
           disabled={disabled}
           label="Subnet IP Range Address"
           onChange={onIpv4Change}
-          value={subnet.ip.ipv4}
-          errorText={subnet.ip.ipv4Error}
+          value={subnet.ipv4}
         />
+        {ipv4Errors.length > 0
+            ? ipv4Errors.map((subnetError) => (
+                <FormHelperText sx={{ color: '#ca0813'}} key={subnetError} >{subnetError}</FormHelperText> 
+              ))
+          : null}
         {availIps && (
           <FormHelperText>
             Available IP Addresses:{' '}

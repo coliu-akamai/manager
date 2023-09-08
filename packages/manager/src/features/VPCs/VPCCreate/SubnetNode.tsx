@@ -15,10 +15,8 @@ import {
 interface Props {
   disabled?: boolean;
   // extra props enable SubnetNode to be an independent component or be part of MultipleSubnetInput
-  // Note: when I first created this component, I wanted to make it possible to use it as an independent component for the Create subnet drawer,
-  // edit subnet drawer, etc. However, now that I'm working on the Create Subnet drawer, imo it's a lot easier to not use this component
-  // If I've time, will look into simplifying it/combining it with the MultipleSubnetInput
   // potential refactor - isRemoveable, and subnetIdx & remove in onChange prop
+  // potentially not worth using this component in SubnetCreateDrawer -- see pr + comment
   idx?: number;
   isRemovable?: boolean;
   onChange: (

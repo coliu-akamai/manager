@@ -100,14 +100,14 @@ export const SubnetUnassignLinodesDrawer = React.memo(
       async (selectedLinodes: Linode[]) => {
         try {
           const updatedConfigInterfaces = await Promise.all(
-            selectedLinodes.map(async (linode) => {
+            selectedLinodes.flatMap(async (linode) => {
               const response = await queryClient.fetchQuery(
                 [linodesQueryKey, 'linode', linode.id, 'configs'],
                 () => getAllLinodeConfigs(linode.id)
               );
 
               if (response) {
-                const configWithVpcInterface = response.find((config) =>
+                const configWithVpcInterface = response.filter((config) =>
                   config.interfaces.some(
                     (_interface) =>
                       _interface.subnet_id === subnetId &&
@@ -115,30 +115,37 @@ export const SubnetUnassignLinodesDrawer = React.memo(
                   )
                 );
 
-                const vpcInterface = configWithVpcInterface?.interfaces?.find(
-                  (_interface) =>
-                    _interface.subnet_id === subnetId &&
-                    _interface.purpose === 'vpc'
-                );
+                const configs: DeleteLinodeConfigInterfacePayload[] = [];
 
-                if (!vpcInterface || !configWithVpcInterface) {
-                  return null;
+                for (const config of configWithVpcInterface) {
+                  const vpcInterface = config.interfaces?.find(
+                    (_interface) =>
+                      _interface.subnet_id === subnetId &&
+                      _interface.purpose === 'vpc'
+                  );
+
+                  if (vpcInterface) {
+                    configs.push({
+                      configId: config.id,
+                      interfaceId: vpcInterface.id,
+                      linodeId: linode.id,
+                    });
+                  }
                 }
 
-                return {
-                  configId: configWithVpcInterface.id,
-                  interfaceId: vpcInterface.id,
-                  linodeId: linode.id,
-                };
+                return configs;
               }
               return null;
             })
           );
 
           // Filter out any null values and ensure item conforms to type using `is` type guard.
-          const filteredConfigInterfaces = updatedConfigInterfaces.filter(
-            (item): item is DeleteLinodeConfigInterfacePayload => item !== null
-          );
+          const filteredConfigInterfaces = updatedConfigInterfaces
+            .flat()
+            .filter(
+              (item): item is DeleteLinodeConfigInterfacePayload =>
+                item !== null
+            );
 
           // Update the state with the new data
           setConfigInterfacesToDelete([...filteredConfigInterfaces]);

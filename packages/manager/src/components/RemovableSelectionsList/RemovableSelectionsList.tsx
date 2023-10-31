@@ -53,6 +53,12 @@ export interface RemovableSelectionsListProps {
    */
   preferredDataLabel?: string;
   /**
+   * Assumes the passed in prop is a key within the selectionData, and that the
+   * value of this key is a string. Assumes the value of this key is unique for each data item.
+   * Uses the value of this key as the unique id for each data item, rather than data.id
+   */
+  preferredID?: string;
+  /**
    * The data to display in the list
    */
   selectionData: RemovableItem[];
@@ -69,6 +75,7 @@ export const RemovableSelectionsList = (
     noDataText,
     onRemove,
     preferredDataLabel,
+    preferredID,
     selectionData,
   } = props;
 
@@ -97,7 +104,10 @@ export const RemovableSelectionsList = (
           <StyledScrollBox maxHeight={maxHeight} maxWidth={maxWidth}>
             <SelectedOptionsList isRemovable={isRemovable} ref={listRef}>
               {selectionData.map((selection) => (
-                <SelectedOptionsListItem alignItems="center" key={selection.id}>
+                <SelectedOptionsListItem
+                  alignItems="center"
+                  key={preferredID ? selection[preferredID] : selection.id}
+                >
                   <StyledLabel>
                     {preferredDataLabel
                       ? selection[preferredDataLabel]

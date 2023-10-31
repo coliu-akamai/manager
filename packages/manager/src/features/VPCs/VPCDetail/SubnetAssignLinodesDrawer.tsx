@@ -70,6 +70,7 @@ export const SubnetAssignLinodesDrawer = (
   const csvRef = React.useRef<any>();
   const newInterfaceId = React.useRef<number>(-1);
   const removedLinodeId = React.useRef<number>(-1);
+  const removedInterfaceId = React.useRef<number>(-1);
   const formattedDate = useFormattedDate();
 
   const [assignLinodesErrors, setAssignLinodesErrors] = React.useState<
@@ -179,7 +180,10 @@ export const SubnetAssignLinodesDrawer = (
 
   const handleUnassignLinode = async (data: LinodeAndConfigData) => {
     const { configId, id: linodeId, interfaceId } = data;
+    // Similar to newInterfaceId.current, we store these in a ref to access later so that we can
+    // update 'assignedLinodesAndConfigData'
     removedLinodeId.current = linodeId;
+    removedInterfaceId.current = interfaceId;
     try {
       await unassignLinode({
         configId,
@@ -258,13 +262,17 @@ export const SubnetAssignLinodesDrawer = (
         }`,
       };
 
-      // maybe should do a check to ensure that interface id isn't already in our assignedData? @Connie
-
       // Add the new Linode data to the list of assigned Linodes and configurations
-      setAssignedLinodesAndConfigData([
-        ...assignedLinodesAndConfigData,
-        newLinodeData,
-      ]);
+      if (
+        !assignedLinodesAndConfigData.some(
+          (assigned) => assigned.interfaceId === newInterfaceId.current
+        )
+      ) {
+        setAssignedLinodesAndConfigData([
+          ...assignedLinodesAndConfigData,
+          newLinodeData,
+        ]);
+      }
 
       // Reset the form, clear its values, and remove any previously selected Linode configurations when a Linode is chosen
       resetForm();
@@ -290,19 +298,24 @@ export const SubnetAssignLinodesDrawer = (
   React.useEffect(() => {
     // if a linode is not assigned to the subnet but is in assignedLinodesAndConfigData,
     // we want to remove it from assignedLinodesAndConfigData
-    const isLinodeToRemoveValid =
+    const isInterfaceToRemoveValid =
       removedLinodeId.current !== -1 &&
+      removedInterfaceId.current !== -1 &&
       !subnet?.linodes.some(
-        (linodeInfo) => linodeInfo.id === removedLinodeId.current
+        (linodeInfo) =>
+          linodeInfo.id === removedLinodeId.current &&
+          linodeInfo.interfaces.some(
+            (interfaces) => interfaces.id === removedInterfaceId.current
+          )
       ) &&
       !!assignedLinodesAndConfigData.find(
-        (data) => data.id === removedLinodeId.current
+        (data) => data.interfaceId === removedInterfaceId.current
       );
 
-    if (isLinodeToRemoveValid) {
+    if (isInterfaceToRemoveValid) {
       setAssignedLinodesAndConfigData(
         [...assignedLinodesAndConfigData].filter(
-          (linode) => linode.id !== removedLinodeId.current
+          (linode) => linode.interfaceId !== removedInterfaceId.current
         )
       );
     }
@@ -466,6 +479,7 @@ export const SubnetAssignLinodesDrawer = (
         headerText={`Linodes Assigned to Subnet (${assignedLinodesAndConfigData.length})`}
         noDataText={'No Linodes have been assigned.'}
         preferredDataLabel="linodeConfigLabel"
+        preferredID="interfaceId"
         selectionData={assignedLinodesAndConfigData}
       />
       {assignedLinodesAndConfigData.length > 0 && (

@@ -245,6 +245,9 @@ export const SubnetAssignLinodesDrawer = (
           linodeInfo.interfaces.some(
             (interfaceInfo) => interfaceInfo.id === newInterfaceId.current
           )
+      ) &&
+      !assignedLinodesAndConfigData.some(
+        (data) => data.interfaceId === newInterfaceId.current
       )
     ) {
       const configId = getConfigId(linodeConfigs, values.selectedConfig);
@@ -263,16 +266,10 @@ export const SubnetAssignLinodesDrawer = (
       };
 
       // Add the new Linode data to the list of assigned Linodes and configurations
-      if (
-        !assignedLinodesAndConfigData.some(
-          (assigned) => assigned.interfaceId === newInterfaceId.current
-        )
-      ) {
-        setAssignedLinodesAndConfigData([
-          ...assignedLinodesAndConfigData,
-          newLinodeData,
-        ]);
-      }
+      setAssignedLinodesAndConfigData([
+        ...assignedLinodesAndConfigData,
+        newLinodeData,
+      ]);
 
       // Reset the form, clear its values, and remove any previously selected Linode configurations when a Linode is chosen
       resetForm();

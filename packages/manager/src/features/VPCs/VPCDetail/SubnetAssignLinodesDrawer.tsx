@@ -103,33 +103,12 @@ export const SubnetAssignLinodesDrawer = (
   };
 
   // We only want the linodes from the same region as the VPC
-  const { data: linodes, refetch: getCSVData } = useAllLinodesQuery(
+  const { data: assignableLinodes, refetch: getCSVData } = useAllLinodesQuery(
     {},
     {
       region: vpcRegion,
     }
   );
-
-  // We need to filter to the linodes from this region that are not already
-  // assigned to this subnet
-  const findUnassignedLinodes = React.useCallback(() => {
-    return linodes?.filter((linode) => {
-      return !subnet?.linodes.some((linodeInfo) => linodeInfo.id === linode.id);
-    });
-  }, [subnet, linodes]);
-
-  const [linodeOptionsToAssign, setLinodeOptionsToAssign] = React.useState<
-    Linode[]
-  >([]);
-
-  // Moved the list of linodes that are currently assignable to a subnet into a state variable (linodeOptionsToAssign)
-  // and update that list whenever this subnet or the list of all linodes in this subnet's region changes. This takes
-  // care of the MUI invalid value warning that was occuring before in the Linodes autocomplete [M3-6752]
-  React.useEffect(() => {
-    if (linodes) {
-      setLinodeOptionsToAssign(findUnassignedLinodes() ?? []);
-    }
-  }, [linodes, setLinodeOptionsToAssign, findUnassignedLinodes]);
 
   // Determine the configId based on the number of configurations
   function getConfigId(linodeConfigs: Config[], selectedConfig: Config | null) {
@@ -253,11 +232,15 @@ export const SubnetAssignLinodesDrawer = (
     if (!values.selectedLinode) {
       return;
     }
-    // Check if the selected Linode is already assigned to the subnet
+    // Check if the selected Linode has been just assigned to this subnet
     if (
       values.selectedLinode &&
       subnet?.linodes.some(
-        (linodeInfo) => linodeInfo.id === values.selectedLinode?.id
+        (linodeInfo) =>
+          linodeInfo.id === values.selectedLinode?.id &&
+          linodeInfo.interfaces.some(
+            (interfaceInfo) => interfaceInfo.id === newInterfaceId.current
+          )
       )
     ) {
       const configId = getConfigId(linodeConfigs, values.selectedConfig);
@@ -274,6 +257,8 @@ export const SubnetAssignLinodesDrawer = (
             : ''
         }`,
       };
+
+      // maybe should do a check to ensure that interface id isn't already in our assignedData? @Connie
 
       // Add the new Linode data to the list of assigned Linodes and configurations
       setAssignedLinodesAndConfigData([
@@ -301,6 +286,7 @@ export const SubnetAssignLinodesDrawer = (
     setValues,
   ]);
 
+  // we'll have to redo this stuff too @Connie
   React.useEffect(() => {
     // if a linode is not assigned to the subnet but is in assignedLinodesAndConfigData,
     // we want to remove it from assignedLinodesAndConfigData
@@ -389,8 +375,7 @@ export const SubnetAssignLinodesDrawer = (
           disabled={userCannotAssignLinodes}
           inputValue={values.selectedLinode?.label || ''}
           label={'Linodes'}
-          // We only want to be able to assign linodes that were not already assigned to this subnet
-          options={linodeOptionsToAssign}
+          options={assignableLinodes ?? []}
           placeholder="Select Linodes or type to search"
           sx={{ marginBottom: '8px' }}
           value={values.selectedLinode || null}

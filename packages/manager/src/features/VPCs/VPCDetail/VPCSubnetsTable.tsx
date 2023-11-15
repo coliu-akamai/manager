@@ -246,7 +246,7 @@ export const VPCSubnetsTable = (props: Props) => {
             {subnet.linodes.length > 0 ? (
               subnet.linodes.map((linodeInfo) => (
                 <SubnetLinodeRow
-                  handlePowerActionsLinode={handlePowerActionsLinode}
+                  // handlePowerActionsLinode={handlePowerActionsLinode}
                   handleUnassignLinode={handleSubnetUnassignLinode}
                   key={linodeInfo.id}
                   linodeId={linodeInfo.id}
@@ -356,14 +356,14 @@ export const VPCSubnetsTable = (props: Props) => {
           vpcId={vpcId}
         />
       )}
-      {powerActionDialogOpen && (
+      {/* {powerActionDialogOpen && (
         <PowerActionsDialog
           action={linodePowerAction ?? 'Reboot'}
           isOpen={powerActionDialogOpen}
           linodeId={selectedLinode?.id}
           onClose={() => setPowerActionDialogOpen(false)}
         />
-      )}
+      )} */}
     </>
   );
 };

@@ -24,6 +24,7 @@ interface Props {
   isOpen: boolean;
   linodeId: number | undefined;
   onClose: () => void;
+  setLinodeJustRebootedFlag?: (reboot: boolean) => void;
 }
 
 /**
@@ -38,7 +39,7 @@ export const selectDefaultConfig = (configs?: Config[]) =>
   configs?.length === 1 ? configs[0].id : undefined;
 
 export const PowerActionsDialog = (props: Props) => {
-  const { action, isOpen, linodeId, onClose } = props;
+  const { action, isOpen, linodeId, onClose, setLinodeJustRebootedFlag } = props;
   const theme = useTheme();
 
   const { data: linode } = useLinodeQuery(
@@ -106,6 +107,9 @@ export const PowerActionsDialog = (props: Props) => {
       await mutateAsync({
         config_id: selectedConfigID ?? selectDefaultConfig(configs),
       });
+      if (setLinodeJustRebootedFlag) {
+        setLinodeJustRebootedFlag(true);
+      }
     } else {
       const mutateAsync = mutationMap[action as 'Power Off'];
       await mutateAsync();

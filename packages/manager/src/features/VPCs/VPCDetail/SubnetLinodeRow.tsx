@@ -15,6 +15,7 @@ import { TableRow } from 'src/components/TableRow';
 import { TooltipIcon } from 'src/components/TooltipIcon';
 import { Typography } from 'src/components/Typography';
 import { getLinodeIconStatus } from 'src/features/Linodes/LinodesLanding/utils';
+import { PowerActionsDialog } from 'src/features/Linodes/PowerActionsDialogOrDrawer';
 import { useAllLinodeConfigsQuery } from 'src/queries/linodes/configs';
 import { useLinodeFirewallsQuery } from 'src/queries/linodes/firewalls';
 import {
@@ -36,7 +37,7 @@ import type { Subnet } from '@linode/api-v4/lib/vpcs/types';
 import type { Action } from 'src/features/Linodes/PowerActionsDialogOrDrawer';
 
 interface Props {
-  handlePowerActionsLinode: (linode: Linode, action: Action) => void;
+  // handlePowerActionsLinode: (linode: Linode, action: Action) => void;
   handleUnassignLinode: (linode: Linode, subnet?: Subnet) => void;
   linodeId: number;
   subnet?: Subnet;
@@ -45,9 +46,15 @@ interface Props {
 }
 
 export const SubnetLinodeRow = (props: Props) => {
+  const [powerActionDialogOpen, setPowerActionDialogOpen] = React.useState(
+    false
+  );
+  const [linodePowerAction, setLinodePowerAction] = React.useState<
+    Action | undefined
+  >();
   const queryClient = useQueryClient();
   const {
-    handlePowerActionsLinode,
+    // handlePowerActionsLinode,
     handleUnassignLinode,
     linodeId,
     subnet,
@@ -61,6 +68,10 @@ export const SubnetLinodeRow = (props: Props) => {
     isLoading: linodeLoading,
   } = useLinodeQuery(linodeId);
 
+  const [linodeJustRebooted, setLinodeJustRebooted] = React.useState(
+    linode?.status === 'rebooting'
+  );
+
   const {
     data: attachedFirewalls,
     error: firewallsError,
@@ -72,6 +83,11 @@ export const SubnetLinodeRow = (props: Props) => {
     error: configsError,
     isLoading: configsLoading,
   } = useAllLinodeConfigsQuery(linodeId);
+
+  const handlePowerActionsLinode = (action: Action) => {
+    setPowerActionDialogOpen(true);
+    setLinodePowerAction(action);
+  };
 
   // If the Linode's status is running, we want to check if its interfaces associated with this subnet have become active so
   // that we can determine if it needs a reboot or not. So, we need to invalidate the linode configs query to get the most up to date information.
@@ -118,85 +134,94 @@ export const SubnetLinodeRow = (props: Props) => {
   const iconStatus = getLinodeIconStatus(linode.status);
   const isRunning = linode.status === 'running';
   const isOffline = linode.status === 'stopped' || linode.status === 'offline';
-  const isRebootNeeded =
-    isRunning &&
-    configs?.some((config) =>
-      config.interfaces.some(
-        (linodeInterface) =>
-          linodeInterface.purpose === 'vpc' && !linodeInterface.active
-      )
-    );
+  const isRebootNeeded = linodeJustRebooted
+    ? false
+    : isRunning &&
+      configs?.some((config) =>
+        config.interfaces.some(
+          (linodeInterface) =>
+            linodeInterface.purpose === 'vpc' && !linodeInterface.active
+        )
+      );
 
   const showPowerButton = !isRebootNeeded && (isRunning || isOffline);
 
   return (
-    <StyledTableRow>
-      <StyledTableCell component="th" scope="row" sx={{ paddingLeft: 6 }}>
-        <Link to={`/linodes/${linode.id}`}>{linode.label}</Link>
-      </StyledTableCell>
-      <StyledTableCell statusCell>
-        <StatusIcon
-          aria-label={`Linode status ${linode?.status ?? iconStatus}`}
-          status={iconStatus}
-        />
-        {isRebootNeeded ? (
-          <>
-            {'Reboot Needed'}
-            <TooltipIcon
-              status="help"
-              sxTooltipIcon={{ paddingRight: 0 }}
-              text={VPC_REBOOT_MESSAGE}
+    <>
+      <StyledTableRow>
+        <StyledTableCell component="th" scope="row" sx={{ paddingLeft: 6 }}>
+          <Link to={`/linodes/${linode.id}`}>{linode.label}</Link>
+        </StyledTableCell>
+        <StyledTableCell statusCell>
+          <StatusIcon
+            aria-label={`Linode status ${linode?.status ?? iconStatus}`}
+            status={iconStatus}
+          />
+          {isRebootNeeded ? (
+            <>
+              {'Reboot Needed'}
+              <TooltipIcon
+                status="help"
+                sxTooltipIcon={{ paddingRight: 0 }}
+                text={VPC_REBOOT_MESSAGE}
+              />
+            </>
+          ) : (
+            capitalizeAllWords(linode.status.replace('_', ' '))
+          )}
+        </StyledTableCell>
+        <Hidden smDown>
+          <StyledTableCell>
+            {getSubnetLinodeIPv4CellString(
+              configs ?? [],
+              configsLoading,
+              subnetId,
+              configsError ?? undefined
+            )}
+          </StyledTableCell>
+        </Hidden>
+        <Hidden smDown>
+          <StyledTableCell>
+            {getFirewallsCellString(
+              attachedFirewalls?.data ?? [],
+              firewallsLoading,
+              firewallsError ?? undefined
+            )}
+          </StyledTableCell>
+        </Hidden>
+        <StyledActionTableCell actionCell>
+          {isRebootNeeded && (
+            <InlineMenuAction
+              onClick={() => {
+                handlePowerActionsLinode('Reboot');
+              }}
+              actionText="Reboot"
             />
-          </>
-        ) : (
-          capitalizeAllWords(linode.status.replace('_', ' '))
-        )}
-      </StyledTableCell>
-      <Hidden smDown>
-        <StyledTableCell>
-          {getSubnetLinodeIPv4CellString(
-            configs ?? [],
-            configsLoading,
-            subnetId,
-            configsError ?? undefined
           )}
-        </StyledTableCell>
-      </Hidden>
-      <Hidden smDown>
-        <StyledTableCell>
-          {getFirewallsCellString(
-            attachedFirewalls?.data ?? [],
-            firewallsLoading,
-            firewallsError ?? undefined
+          {showPowerButton && (
+            <InlineMenuAction
+              onClick={() => {
+                handlePowerActionsLinode(isOffline ? 'Power On' : 'Power Off');
+              }}
+              actionText={isOffline ? 'Power On' : 'Power Off'}
+            />
           )}
-        </StyledTableCell>
-      </Hidden>
-      <StyledActionTableCell actionCell>
-        {isRebootNeeded && (
           <InlineMenuAction
-            onClick={() => {
-              handlePowerActionsLinode(linode, 'Reboot');
-            }}
-            actionText="Reboot"
+            actionText="Unassign Linode"
+            onClick={() => handleUnassignLinode(linode, subnet)}
           />
-        )}
-        {showPowerButton && (
-          <InlineMenuAction
-            onClick={() => {
-              handlePowerActionsLinode(
-                linode,
-                isOffline ? 'Power On' : 'Power Off'
-              );
-            }}
-            actionText={isOffline ? 'Power On' : 'Power Off'}
-          />
-        )}
-        <InlineMenuAction
-          actionText="Unassign Linode"
-          onClick={() => handleUnassignLinode(linode, subnet)}
+        </StyledActionTableCell>
+      </StyledTableRow>
+      {powerActionDialogOpen && (
+        <PowerActionsDialog
+          action={linodePowerAction ?? 'Reboot'}
+          isOpen={powerActionDialogOpen}
+          linodeId={linodeId}
+          onClose={() => setPowerActionDialogOpen(false)}
+          setLinodeJustRebootedFlag={setLinodeJustRebooted}
         />
-      </StyledActionTableCell>
-    </StyledTableRow>
+      )}
+    </>
   );
 };
 

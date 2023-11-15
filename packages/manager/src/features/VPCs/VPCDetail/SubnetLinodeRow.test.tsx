@@ -59,7 +59,7 @@ describe('SubnetLinodeRow', () => {
     } = renderWithTheme(
       wrapWithTableBody(
         <SubnetLinodeRow
-          handlePowerActionsLinode={handlePowerActionsLinode}
+         // handlePowerActionsLinode={handlePowerActionsLinode}
           handleUnassignLinode={handleUnassignLinode}
           linodeId={linodeFactory1.id}
           subnetId={0}
@@ -126,7 +126,7 @@ describe('SubnetLinodeRow', () => {
     const { getAllByRole, getByTestId } = renderWithTheme(
       wrapWithTableBody(
         <SubnetLinodeRow
-          handlePowerActionsLinode={handlePowerActionsLinode}
+          //handlePowerActionsLinode={handlePowerActionsLinode}
           handleUnassignLinode={handleUnassignLinode}
           linodeId={linodeFactory1.id}
           subnetId={0}

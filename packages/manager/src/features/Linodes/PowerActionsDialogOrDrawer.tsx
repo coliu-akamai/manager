@@ -39,7 +39,13 @@ export const selectDefaultConfig = (configs?: Config[]) =>
   configs?.length === 1 ? configs[0].id : undefined;
 
 export const PowerActionsDialog = (props: Props) => {
-  const { action, isOpen, linodeId, onClose, setLinodeJustRebootedFlag } = props;
+  const {
+    action,
+    isOpen,
+    linodeId,
+    onClose,
+    setLinodeJustRebootedFlag,
+  } = props;
   const theme = useTheme();
 
   const { data: linode } = useLinodeQuery(

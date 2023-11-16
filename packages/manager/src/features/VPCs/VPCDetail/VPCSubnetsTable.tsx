@@ -19,7 +19,7 @@ import { TableHead } from 'src/components/TableHead';
 import { TableRow } from 'src/components/TableRow';
 import { TableRowEmpty } from 'src/components/TableRowEmpty/TableRowEmpty';
 import { TableSortCell } from 'src/components/TableSortCell';
-import { PowerActionsDialog } from 'src/features/Linodes/PowerActionsDialogOrDrawer';
+// import { PowerActionsDialog } from 'src/features/Linodes/PowerActionsDialogOrDrawer';
 import { SubnetActionMenu } from 'src/features/VPCs/VPCDetail/SubnetActionMenu';
 import { useOrder } from 'src/hooks/useOrder';
 import { usePagination } from 'src/hooks/usePagination';
@@ -66,12 +66,12 @@ export const VPCSubnetsTable = (props: Props) => {
     subnetAssignLinodesDrawerOpen,
     setSubnetAssignLinodesDrawerOpen,
   ] = React.useState(false);
-  const [powerActionDialogOpen, setPowerActionDialogOpen] = React.useState(
-    false
-  );
-  const [linodePowerAction, setLinodePowerAction] = React.useState<
-    Action | undefined
-  >();
+  // const [powerActionDialogOpen, setPowerActionDialogOpen] = React.useState(
+  //   false
+  // );
+  // const [linodePowerAction, setLinodePowerAction] = React.useState<
+  //   Action | undefined
+  // >();
 
   const [
     subnetUnassignLinodesDrawerOpen,
@@ -151,11 +151,11 @@ export const VPCSubnetsTable = (props: Props) => {
     setSubnetAssignLinodesDrawerOpen(true);
   };
 
-  const handlePowerActionsLinode = (linode: Linode, action: Action) => {
-    setSelectedLinode(linode);
-    setPowerActionDialogOpen(true);
-    setLinodePowerAction(action);
-  };
+  // const handlePowerActionsLinode = (linode: Linode, action: Action) => {
+  //   setSelectedLinode(linode);
+  //   setPowerActionDialogOpen(true);
+  //   setLinodePowerAction(action);
+  // };
 
   // Ensure that the selected subnet passed to the drawer is up to date
   React.useEffect(() => {

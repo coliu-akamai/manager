@@ -57,6 +57,58 @@ type LinodeAndConfigData = Linode & {
   linodeConfigLabel: string;
 };
 
+type reducerState = {
+  assignLinodesErrors: Record<string, string | undefined>;
+  assignedLinodesAndConfigData: LinodeAndConfigData[];
+  autoAssignIPv4: boolean;
+  linodeConfigs: Config[];
+  linodeOptionsToAssign: Linode[];
+};
+type reducerAction = {
+  type: string;
+} & { [key: string]: any };
+
+function reducer(state: reducerState, action: reducerAction): reducerState {
+  switch (action.type) {
+    case 'assignLinodesErrors': {
+      return {
+        ...state,
+        assignLinodesErrors: action.data,
+      };
+    }
+    case 'assignedLinodesAndConfigData': {
+      return {
+        ...state,
+      };
+    }
+    // case 'autoAssignIPv4': {
+    //   return {
+    //     ...state,
+    //   };
+    // }
+    // case 'linodeConfigs': {
+    //   return {
+    //     ...state,
+    //   };
+    // }
+    // case 'linodeOptionsToAssign': {
+    //   return {
+    //     ...state,
+    //   };
+    // }
+    default:
+      throw new Error('unexpected action');
+  }
+}
+
+const initialReducerState: reducerState = {
+  assignLinodesErrors: {},
+  assignedLinodesAndConfigData: [],
+  autoAssignIPv4: true,
+  linodeConfigs: [],
+  linodeOptionsToAssign: [],
+};
+
 export const SubnetAssignLinodesDrawer = (
   props: SubnetAssignLinodesDrawerProps
 ) => {
@@ -72,9 +124,7 @@ export const SubnetAssignLinodesDrawer = (
   const removedLinodeId = React.useRef<number>(-1);
   const formattedDate = useFormattedDate();
 
-  const [assignLinodesErrors, setAssignLinodesErrors] = React.useState<
-    Record<string, string | undefined>
-  >({});
+  const [state, dispatch] = React.useReducer(reducer, initialReducerState);
 
   // While the drawer is open, we maintain a local list of assigned Linodes.
   // This is distinct from the subnet's global list of assigned Linodes, which encompasses all assignments.
@@ -193,8 +243,10 @@ export const SubnetAssignLinodesDrawer = (
     } catch (errors) {
       const errorMap = getErrorMap(['ipv4.vpc'], errors);
       const errorMessage = determineErrorMessage(configId, errorMap);
-
-      setAssignLinodesErrors({ ...errorMap, none: errorMessage });
+      dispatch({
+        data: { ...errorMap, none: errorMessage },
+        type: 'assignLinodesErrors',
+      });
     }
   };
 
@@ -330,8 +382,11 @@ export const SubnetAssignLinodesDrawer = (
           setLinodeConfigs(data);
         } catch (errors) {
           // force error to appear at top of drawer
-          setAssignLinodesErrors({
-            none: 'Could not load configurations for selected linode',
+          dispatch({
+            data: {
+              none: 'Could not load configurations for selected linode',
+            },
+            type: 'assignLinodesErrors',
           });
         }
       } else {
@@ -351,7 +406,10 @@ export const SubnetAssignLinodesDrawer = (
     resetForm();
     setAssignedLinodesAndConfigData([]);
     setLinodeConfigs([]);
-    setAssignLinodesErrors({});
+    dispatch({
+      data: {},
+      type: 'assignLinodesErrors',
+    });
     setUnassignLinodesErrors([]);
     setAutoAssignIPv4(true);
   };
@@ -371,8 +429,8 @@ export const SubnetAssignLinodesDrawer = (
           variant="error"
         />
       )}
-      {assignLinodesErrors.none && (
-        <Notice text={assignLinodesErrors.none} variant="error" />
+      {state.assignLinodesErrors.none && (
+        <Notice text={state.assignLinodesErrors.none} variant="error" />
       )}
       <Notice
         spacingBottom={16}
@@ -384,7 +442,10 @@ export const SubnetAssignLinodesDrawer = (
         <Autocomplete
           onChange={(_, value: Linode) => {
             setFieldValue('selectedLinode', value);
-            setAssignLinodesErrors({});
+            dispatch({
+              data: {},
+              type: 'assignLinodesErrors',
+            });
           }}
           disabled={userCannotAssignLinodes}
           inputValue={values.selectedLinode?.label || ''}
@@ -418,10 +479,13 @@ export const SubnetAssignLinodesDrawer = (
           <TextField
             onChange={(e) => {
               setFieldValue('chosenIP', e.target.value);
-              setAssignLinodesErrors({});
+              dispatch({
+                data: {},
+                type: 'assignLinodesErrors',
+              });
             }}
             disabled={userCannotAssignLinodes}
-            errorText={assignLinodesErrors['ipv4.vpc']}
+            errorText={state.assignLinodesErrors['ipv4.vpc']}
             label={'VPC IPv4'}
             sx={{ marginBottom: '8px' }}
             value={values.chosenIP}
@@ -437,7 +501,10 @@ export const SubnetAssignLinodesDrawer = (
             <Autocomplete
               onChange={(_, value: Config) => {
                 setFieldValue('selectedConfig', value);
-                setAssignLinodesErrors({});
+                dispatch({
+                  data: {},
+                  type: 'assignLinodesErrors',
+                });
               }}
               disabled={userCannotAssignLinodes}
               inputValue={values.selectedConfig?.label || ''}

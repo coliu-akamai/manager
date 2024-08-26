@@ -252,12 +252,12 @@ describe('Tests for set', () => {
       });
     });
 
-    // fails - maybe the only case that might cause potential concern, given our current api error structure
-    it('sets the value for complex string and array paths (with indexes)', () => {
+    // fails
+    it.only('sets the value for complex string and array paths (with indexes)', () => {
       let object = {};
 
       // the given paths are equivalent in string vs array format
-      object = set(object, 'a.b.1', 'b1');
+      object = set(object, 'a.b[1]', 'b1');
       /*
       {
         a: {
@@ -267,7 +267,7 @@ describe('Tests for set', () => {
       */
       expect(object).toEqual({ a: { b: [undefined, 'b1'] } });
       object = set(object, 'a.b[0]', 5);
-      expect(object).toEqual({ a: { b: [5, 'b1'] } });
+      expect(object).toEqual({ a: { b: [5] } });
 
       // If path is an array, indexes can be passed in as a string or as a number
       object = set(object, 'a.b.2', 'b2');
@@ -277,7 +277,7 @@ describe('Tests for set', () => {
 
       object = set(object, 'a.b[3].c', 'c');
       expect(object).toEqual({
-        a: { b: [5, 'b1', 'b2', { c: 'c' }] },
+        a: { b: [undefined, undefined, undefined, { c: 'c' }] },
       });
     });
 

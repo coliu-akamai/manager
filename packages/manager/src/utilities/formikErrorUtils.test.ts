@@ -204,7 +204,7 @@ describe('getFormikErrorsFromAPIErrors', () => {
 });
 
 describe('Tests for set', () => {
-  // fails (sets object) (probably a quick fix)
+  // fails (sets object) (probably a quick fix) (jk would need some more thinking)
   it("returns the passed in 'object' as is if it's not actually a (non array) object", () => {
     expect(set([], 'path not needed', 3)).toEqual([]);
   });

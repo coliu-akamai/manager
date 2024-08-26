@@ -2,7 +2,7 @@ import { reverse } from 'ramda';
 
 import { getAPIErrorOrDefault } from './errorUtils';
 import { isNilOrEmpty } from './isNilOrEmpty';
-import { set } from './set';
+// import { set } from './set';
 
 import type { APIError } from '@linode/api-v4/lib/types';
 import type { FormikErrors } from 'formik';
@@ -21,6 +21,52 @@ export const getFormikErrorsFromAPIErrors = <T>(
     }
     return acc;
   }, {});
+};
+
+export const set = (obj: any, path: string, value: any): any => {
+  // ensure that object is actually a non-array object
+  if (!obj || Array.isArray(obj) || typeof obj !== 'object') {
+    return obj;
+  }
+
+  const parts = path.split(/\.|\[|\]/).filter(Boolean);
+
+  // protect against prototype pollution
+  if (!isPrototypePollutionSafe(parts)) {
+    return obj;
+  }
+
+  parts.reduce((acc: any, part: string, index: number) => {
+    if (index === parts.length - 1) {
+      // Last part, set the value
+      acc[part] = value;
+    } else if (part.match(/^\d+$/)) {
+      // Handle array indices
+      const arrayIndex = parseInt(part, 10);
+      acc[arrayIndex] =
+        acc[arrayIndex] || (parts[index + 1].match(/^\d+$/) ? [] : {});
+    } else {
+      // Handle nested objects
+      acc[part] = acc[part] || (parts[index + 1].match(/^\d+$/) ? [] : {});
+    }
+    return acc[part];
+  }, obj);
+
+  return obj;
+};
+
+/**
+ * Ensures a path cannot lead to a prototype pollution issue.
+ *
+ * @param path - The path to check
+ * @return - boolean depending on whether the path is safe or not
+ */
+export const isPrototypePollutionSafe = (path: string[]): boolean => {
+  return path.reduce((safeSoFar, val) => {
+    const isCurKeySafe =
+      val !== '__proto__' && val !== 'prototype' && val !== 'constructor';
+    return safeSoFar && isCurKeySafe;
+  }, true);
 };
 
 export const handleFieldErrors = (

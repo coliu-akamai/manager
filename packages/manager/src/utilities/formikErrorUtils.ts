@@ -2,7 +2,7 @@ import { reverse } from 'ramda';
 
 import { getAPIErrorOrDefault } from './errorUtils';
 import { isNilOrEmpty } from './isNilOrEmpty';
-import { set } from './set';
+// import { set } from './set';
 
 import type { APIError } from '@linode/api-v4/lib/types';
 import type { FormikErrors } from 'formik';
@@ -17,10 +17,43 @@ export const getFormikErrorsFromAPIErrors = <T>(
         ? error.field.replace(prefixToRemoveFromFields, '')
         : error.field;
 
-      set(acc, field, error.reason);
+      return set(acc, field, error.reason);
     }
     return acc;
   }, {});
+};
+
+export const set = (obj: any, path: string, value: any): any => {
+  // Split the path into parts, handling both dot notation and array indices
+  const [head, ...rest] = path.split(/\.|\[|\]/).filter(Boolean);
+
+  // protect against prototype pollution
+  if (head === 'prototype' || head === '__proto__' || head === 'constructor') {
+    return { ...obj };
+  }
+
+  // Since this is recursive, if there are no more parts in the path, set the value and return
+  if (rest.length === 0) {
+    return { ...obj, [head]: value };
+  }
+
+  // Handle array indices
+  if (head.match(/^\d+$/)) {
+    const index = parseInt(head, 10);
+    // Copy the existing one or create a new empty one
+    const newArray = Array.isArray(obj) ? [...obj] : [];
+    // Recursively set the value at the specified index
+    newArray[index] = set(newArray[index] || {}, rest.join('.'), value);
+
+    return newArray;
+  }
+
+  // Handle nested objects
+  return {
+    ...obj,
+    // Recursively set the value for the nested path
+    [head]: set(obj[head] || {}, rest.join('.'), value),
+  };
 };
 
 export const handleFieldErrors = (

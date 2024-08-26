@@ -78,6 +78,18 @@ describe('Tests for set', () => {
       expect(object2).toEqual(object);
     });
 
+    it('sets the value for complex string paths pt2', () => {
+      const obj = set({}, 'a[1].b[0].c', 'test');
+      expect(obj).toEqual({
+        a: [undefined, { b: [{ c: 'test' }] }],
+      });
+
+      const obj2 = set({}, 'a[1].b.c', 'test');
+      expect(obj2).toEqual({
+        a: [undefined, { b: { c: 'test' } }],
+      });
+    });
+
     it('creates an empty string key', () => {
       expect(set({}, '', 'empty string')).toEqual({ '': 'empty string' });
       expect(set({}, [''], 'empty string for array')).toEqual({

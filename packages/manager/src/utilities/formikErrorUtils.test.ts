@@ -221,7 +221,7 @@ describe('Tests for set', () => {
     });
 
     // pass
-    it.only('sets the value for complex string and array paths (without indexes)', () => {
+    it('sets the value for complex string and array paths (without indexes)', () => {
       let object = {};
 
       // the given paths are equivalent in string vs array format
@@ -237,6 +237,18 @@ describe('Tests for set', () => {
       expect(object).toEqual({
         a: { b: { c: 'c', d: 'd' } },
         e: { f: { g: 'g' } },
+      });
+    });
+
+    it.only('sets the value for complex string paths pt2', () => {
+      const obj = set({}, 'a[1].b[0].c', 'test');
+      expect(obj).toEqual({
+        a: [undefined, { b: [{ c: 'test' }] }],
+      });
+
+      const obj2 = set({}, 'a[1].b.c', 'test');
+      expect(obj2).toEqual({
+        a: [undefined, { b: { c: 'test' } }],
       });
     });
 
@@ -392,17 +404,17 @@ describe('Tests for set', () => {
       let object = {};
       // __proto__
       object = set(object, '__proto__', 1);
-      //expect(object).toBe(settedObject);
+      // expect(object).toBe(settedObject);
       expect(object).toEqual({});
 
       // constructor
       object = set(object, 'constructor', 1);
-      //expect(object).toBe(settedObject);
+      // expect(object).toBe(settedObject);
       expect(object).toEqual({});
 
       // prototype
       object = set(object, 'prototype', 1);
-      //expect(object).toBe(settedObject);
+      // expect(object).toBe(settedObject);
       expect(object).toEqual({});
     });
 
@@ -411,28 +423,28 @@ describe('Tests for set', () => {
       let object = {};
       // prototype pollution key separated by .
       object = set(object, 'test.__proto__.test', 1);
-      //expect(object).toBe(settedObject);
+      // expect(object).toBe(settedObject);
       expect(object).toEqual({ test: {} });
 
       object = set(object, 'test.constructor.test', 1);
-      //expect(object).toBe(settedObject);
+      // expect(object).toBe(settedObject);
       expect(object).toEqual({ test: {} });
 
       object = set(object, 'test.prototype.test', 1);
-      //expect(object).toBe(settedObject);
+      // expect(object).toBe(settedObject);
       expect(object).toEqual({ test: {} });
 
       // prototype pollution key separated by []
       object = set(object, 'test.test[__proto__]', 1);
-      //expect(object).toBe(settedObject);
+      // expect(object).toBe(settedObject);
       expect(object).toEqual({ test: { test: {} } });
 
       object = set(object, 'test.test[constructor]', 1);
-      //expect(object).toBe(settedObject);
+      // expect(object).toBe(settedObject);
       expect(object).toEqual({ test: { test: {} } });
 
       object = set(object, 'test.test[prototype]', 1);
-      //expect(object).toBe(settedObject);
+      // expect(object).toBe(settedObject);
       expect(object).toEqual({ test: { test: {} } });
     });
 
@@ -440,15 +452,15 @@ describe('Tests for set', () => {
       let object = {};
       // prototype pollution key separated by .
       object = set(object, 'test__proto__test', 1);
-      //expect(object).toBe(settedObject);
+      // expect(object).toBe(settedObject);
       expect(object).toEqual({ test__proto__test: 1 });
 
       object = set(object, 'constructortest', 1);
-      //expect(object).toBe(settedObject);
+      // expect(object).toBe(settedObject);
       expect(object).toEqual({ constructortest: 1, test__proto__test: 1 });
 
       object = set(object, 'testprototype', 1);
-      //expect(object).toBe(settedObject);
+      // expect(object).toBe(settedObject);
       expect(object).toEqual({
         constructortest: 1,
         test__proto__test: 1,

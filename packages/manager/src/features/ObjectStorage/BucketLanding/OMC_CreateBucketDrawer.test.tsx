@@ -16,6 +16,7 @@ const props = {
 describe('OMC_CreateBucketDrawer', () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should render the drawer', () => {

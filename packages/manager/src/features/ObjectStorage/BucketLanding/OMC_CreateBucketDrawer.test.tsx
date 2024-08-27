@@ -13,11 +13,15 @@ const props = {
   onClose: vi.fn(),
 };
 
-describe('OMC_CreateBucketDrawer', () => {
-  beforeEach(() => {
-    vi.resetAllMocks();
-  });
+beforeAll(() => {
+  server.listen();
+});
 
+afterAll(() => {
+  server.close();
+});
+
+describe('OMC_CreateBucketDrawer', () => {
   it('should render the drawer', () => {
     const {
       getByTestId,
@@ -74,10 +78,10 @@ describe('OMC_CreateBucketDrawer', () => {
 
       await waitFor(
         () =>
-          expect(getByText('Object Storage Endpoint Type')).toBeInTheDocument(),
-        {
-          timeout: 2000,
-        }
+          expect(getByText('Object Storage Endpoint Type')).toBeInTheDocument()
+        // {
+        //   timeout: 2000,
+        // }
       );
 
       // Additional verification after waitFor

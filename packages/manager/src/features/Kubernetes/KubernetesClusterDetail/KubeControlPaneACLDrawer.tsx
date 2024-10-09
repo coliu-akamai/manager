@@ -40,7 +40,7 @@ export const KubeControlPlaneACLDrawer = (props: Props) => {
     error: isErrorKubernetesACL,
     isFetching: isFetchingKubernetesACL,
     isLoading: isLoadingKubernetesACL,
-    // refetch: refetchKubernetesACL,
+    refetch: refetchKubernetesACL,
   } = useKubernetesControlPlaneACLQuery(clusterId);
 
   const ipv4 = data?.acl?.addresses?.ipv4?.map((ip) => {
@@ -58,11 +58,11 @@ export const KubeControlPlaneACLDrawer = (props: Props) => {
   // check if we really want this?
   // refetchOnMount isnt good enough for this query because
   // it is already mounted in the rendered Drawer
-  // React.useEffect(() => {
-  //   if (open && !isLoadingKubernetesACL && !isFetchingKubernetesACL) {
-  //     refetchKubernetesACL(); // makes it fetch again
-  //   }
-  // }, [open]);
+  React.useEffect(() => {
+    if (open && !isLoadingKubernetesACL && !isFetchingKubernetesACL) {
+      refetchKubernetesACL(); // makes it fetch again
+    }
+  }, [open]);
 
   const {
     mutateAsync: updateKubernetesClusterControlPlaneACL,
@@ -97,7 +97,7 @@ export const KubeControlPlaneACLDrawer = (props: Props) => {
 
   const values = watch();
 
-  const updateCluster = handleSubmit(() => {
+  const updateCluster = handleSubmit(async () => {
     const _ipv4 = values.ipv4
       .map((ip) => {
         return ip.address;
@@ -120,7 +120,7 @@ export const KubeControlPlaneACLDrawer = (props: Props) => {
 
     const payload: KubernetesControlPlaneACLPayload = {
       acl: {
-        enabled: enabledExists
+        enabled: enabledExists // also double check this logic
           ? values.enabled
           : shouldDefaultToEnabled || values.enabled, // both new cluster installations as well as all the states where the UI disabled the option for the user to enable, we default to true
         'revision-id': values['revision-id'],
@@ -135,9 +135,9 @@ export const KubeControlPlaneACLDrawer = (props: Props) => {
 
     try {
       if (clusterMigrated) {
-        updateKubernetesClusterControlPlaneACL(payload);
+        await updateKubernetesClusterControlPlaneACL(payload);
       } else {
-        updateKubernetesCluster({
+        await updateKubernetesCluster({
           control_plane: payload,
         });
       }
@@ -148,7 +148,7 @@ export const KubeControlPlaneACLDrawer = (props: Props) => {
       //   setUpdateACLError(err[0].reason.match(regex));
       // });
       for (const error of errors) {
-        if (error.field) {
+        if (error.field && error.field !== 'acl') {
           setError(error.field, { message: error.reason });
         } else {
           setError('root', { message: error.reason });
@@ -228,7 +228,6 @@ export const KubeControlPlaneACLDrawer = (props: Props) => {
             A list of individual ipv4 and ipv6 addresses or CIDRs to ALLOW
             access to the control plane.
           </Typography>
-          {/* I am not sure if this matches - will need to check */}
           {errors.root?.message && clusterMigrated && (
             <Notice spacingTop={8} variant="error">
               {errors.root.message}

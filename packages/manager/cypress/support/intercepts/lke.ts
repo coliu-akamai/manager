@@ -16,6 +16,7 @@ import type {
   KubeConfigResponse,
   KubeNodePoolResponse,
   KubernetesCluster,
+  KubernetesControlPlaneACLPayload,
   KubernetesVersion,
 } from '@linode/api-v4';
 
@@ -352,5 +353,43 @@ export const mockResetKubeconfig = (
     'DELETE',
     apiMatcher(`lke/clusters/${clusterId}/kubeconfig`),
     makeResponse({})
+  );
+};
+
+/**
+ * Intercepts GET request for a cluster's Control Plane ACL and mocks the response
+ *
+ * @param clusterId - Numberic ID of LKE cluster for which to mock response.
+ * @param controlPlaneACL - control plane ACL data for which to mock response
+ *
+ * @returns Cypress chainable
+ */
+export const mockGetControlPlaneACL = (
+  clusterId: number,
+  controlPlaneACL: KubernetesControlPlaneACLPayload
+): Cypress.Chainable<null> => {
+  return cy.intercept(
+    'GET',
+    apiMatcher(`/lke/clusters/${clusterId}/control_plane_acl`),
+    makeResponse(controlPlaneACL)
+  );
+};
+
+/**
+ * Intercepts PUT request for a cluster's Control Plane ACL and mocks the response
+ *
+ * @param clusterId - Numberic ID of LKE cluster for which to mock response.
+ * @param controlPlaneACL - control plane ACL data for which to mock response
+ *
+ * @returns Cypress chainable
+ */
+export const mockUpdateControlPlaneACL = (
+  clusterId: number,
+  controlPlaneACL: KubernetesControlPlaneACLPayload
+): Cypress.Chainable<null> => {
+  return cy.intercept(
+    'PUT',
+    apiMatcher(`/lke/clusters/${clusterId}/control_plane_acl`),
+    makeResponse(controlPlaneACL)
   );
 };

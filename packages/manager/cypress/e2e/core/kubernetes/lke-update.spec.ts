@@ -1327,7 +1327,7 @@ describe.only('LKE ACL updates', () => {
   /**
    * - Confirms ACL can be enabled from the summary page
    * - Confirms revision ID can be updated
-   * - Confirms both IPv4 and IPv6 can be updated and that summary page updates as a result
+   * - Confirms both IPv4 and IPv6 can be updated and that summary page and drawer updates as a result
    */
   it('can enable ACL on an LKE cluster with ACL pre-installed and edit IPs', () => {
     const mockACLOptions = kubernetesControlPlaneACLOptionsFactory.build({
@@ -1359,6 +1359,7 @@ describe.only('LKE ACL updates', () => {
     cy.visitWithLogin(`/kubernetes/clusters/${mockCluster.id}`);
     cy.wait(['@getCluster', '@getControlPlaneACL']);
 
+    // confirm summary panel
     cy.contains('Control Plane ACL').should('be.visible');
     ui.button
       .findByTitle('Enable')
@@ -1477,7 +1478,7 @@ describe.only('LKE ACL updates', () => {
       'updateControlPlaneACL'
     );
 
-    // confirm data within drawer is updated
+    // confirm data within drawer is updated and edit IPs again
     ui.drawer
       .findByTitle('Control Plane Access Control List')
       .should('be.visible')
@@ -1528,13 +1529,32 @@ describe.only('LKE ACL updates', () => {
     ui.button
       .findByTitle('3 IP Addresses')
       .should('be.visible')
-      .should('be.enabled');
+      .should('be.enabled')
+      .click();
+
+    // confirm data within drawer is updated again
+    ui.drawer
+      .findByTitle('Control Plane Access Control List')
+      .should('be.visible')
+      .within(() => {
+        // update IPv6 addresses
+        cy.findByDisplayValue('8e61:f9e9:8d40:6e0a:cbff:c97a:2692:827e').should('be.visible');
+        cy.findByDisplayValue('f4a2:b849:4a24:d0d9:15f0:704b:f943:718f').should('be.visible');
+      });
   });
 
-  // it('can disable ACL and edit IPs', () => {
+  /**
+   * - Confirms ACL can be disabled from the summary page
+   * - Confirms both IPv4 and IPv6 can be updated and that drawer updates as a result
+   */
+  it('can disable ACL and edit IPs', () => {
 
-  // });
+  });
 
+  /**
+   * - Confirms ACL can be enabled from the summary page when cluster does not have ACL pre-installed
+   * - Confirms drawer appearance when APL is not pre-installed
+   */
   // it('can enable ACL on an LKE cluster with ACL not pre-installed and edit IPs', () => {
 
   // });

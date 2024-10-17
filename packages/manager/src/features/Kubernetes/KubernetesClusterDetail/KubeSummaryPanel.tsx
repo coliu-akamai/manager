@@ -7,35 +7,29 @@ import * as React from 'react';
 import { ActionsPanel } from 'src/components/ActionsPanel/ActionsPanel';
 import { Box } from 'src/components/Box';
 import { StyledActionButton } from 'src/components/Button/StyledActionButton';
-import { StyledLinkButton } from 'src/components/Button/StyledLinkButton';
 import { Chip } from 'src/components/Chip';
-import { CircleProgress } from 'src/components/CircleProgress';
 import { ConfirmationDialog } from 'src/components/ConfirmationDialog/ConfirmationDialog';
 import { EntityDetail } from 'src/components/EntityDetail/EntityDetail';
 import { EntityHeader } from 'src/components/EntityHeader/EntityHeader';
 import { Stack } from 'src/components/Stack';
-import { TagCell } from 'src/components/TagCell/TagCell';
 import { Typography } from 'src/components/Typography';
 import { KubeClusterSpecs } from 'src/features/Kubernetes/KubernetesClusterDetail/KubeClusterSpecs';
+import { getKubeControlPlaneACL } from 'src/features/Kubernetes/kubeUtils';
 import { useIsResourceRestricted } from 'src/hooks/useIsResourceRestricted';
+import { useAccount } from 'src/queries/account/account';
 import {
-  useKubernetesClusterMutation,
   useKubernetesControlPlaneACLQuery,
   useKubernetesDashboardQuery,
   useResetKubeConfigMutation,
 } from 'src/queries/kubernetes';
 import { getErrorStringOrDefault } from 'src/utilities/errorUtils';
-import { pluralize } from 'src/utilities/pluralize';
 
 import { DeleteKubernetesClusterDialog } from './DeleteKubernetesClusterDialog';
 import { KubeConfigDisplay } from './KubeConfigDisplay';
 import { KubeConfigDrawer } from './KubeConfigDrawer';
 import { KubeControlPlaneACLDrawer } from './KubeControlPaneACLDrawer';
-import {
-  StyledActionRowGrid,
-  StyledBox,
-  StyledTagGrid,
-} from './KubeSummaryPanel.styles';
+import { KubeEntityDetailFooter } from './KubeEntityDetailFooter';
+import { StyledActionRowGrid } from './KubeSummaryPanel.styles';
 
 import type { KubernetesCluster } from '@linode/api-v4/lib/kubernetes';
 
@@ -45,6 +39,9 @@ interface Props {
 
 export const KubeSummaryPanel = React.memo((props: Props) => {
   const { cluster } = props;
+
+  const { data: account } = useAccount();
+  const { showControlPlaneACL } = getKubeControlPlaneACL(account);
 
   const theme = useTheme();
 
@@ -56,10 +53,6 @@ export const KubeSummaryPanel = React.memo((props: Props) => {
     setControlPlaneACLDrawerOpen,
   ] = React.useState<boolean>(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
-
-  const { mutateAsync: updateKubernetesCluster } = useKubernetesClusterMutation(
-    cluster.id
-  );
 
   const {
     data: dashboard,
@@ -82,16 +75,7 @@ export const KubeSummaryPanel = React.memo((props: Props) => {
     data: aclData,
     error: isErrorKubernetesACL,
     isLoading: isLoadingKubernetesACL,
-  } = useKubernetesControlPlaneACLQuery(cluster.id);
-
-  const enabledACL = aclData?.acl.enabled ?? false;
-  const totalIPv4 = aclData?.acl.addresses?.ipv4?.length ?? 0;
-  const totalIPv6 = aclData?.acl.addresses?.ipv6?.length ?? 0;
-  const totalNumberIPs = totalIPv4 + totalIPv6;
-
-  const determineIPACLButtonCopy = enabledACL
-    ? pluralize('IP Address', 'IP Addresses', totalNumberIPs)
-    : 'Enable';
+  } = useKubernetesControlPlaneACLQuery(cluster.id, !!showControlPlaneACL);
 
   const [
     resetKubeConfigDialogOpen,
@@ -109,12 +93,6 @@ export const KubeSummaryPanel = React.memo((props: Props) => {
 
   const handleOpenDrawer = () => {
     setDrawerOpen(true);
-  };
-
-  const handleUpdateTags = (newTags: string[]) => {
-    return updateKubernetesCluster({
-      tags: newTags,
-    });
   };
 
   const sxSpacing = {
@@ -164,51 +142,22 @@ export const KubeSummaryPanel = React.memo((props: Props) => {
                   />
                 )}
               </StyledActionRowGrid>
-              <StyledTagGrid>
-                <TagCell
-                  disabled={isClusterReadOnly}
-                  entityLabel={cluster.label}
-                  tags={cluster.tags}
-                  updateTags={handleUpdateTags}
-                  view="inline"
-                />
-              </StyledTagGrid>
             </Grid>
           </Grid>
         }
         footer={
-          <Grid
-            sx={{
-              [theme.breakpoints.down('lg')]: {
-                padding: theme.spacing(1),
-              },
-            }}
-            alignItems="flex-start"
-            lg={8}
-            xs={12}
-          >
-            <StyledBox>
-              <Typography
-                sx={{
-                  fontFamily: theme.font.bold,
-                  marginRight: theme.spacing(0.5),
-                }}
-              >
-                Control Plane ACL:
-              </Typography>
-              {isLoadingKubernetesACL ? (
-                <Box sx={{ paddingLeft: 1 }}>
-                  <CircleProgress noPadding size="sm" />
-                </Box>
-              ) : (
-                <StyledLinkButton
-                  onClick={() => setControlPlaneACLDrawerOpen(true)}
-                >
-                  {determineIPACLButtonCopy}
-                </StyledLinkButton>
-              )}
-            </StyledBox>
-          </Grid>
+          <KubeEntityDetailFooter
+            aclData={aclData}
+            clusterCreated={cluster.created}
+            clusterId={cluster.id}
+            clusterLabel={cluster.label}
+            clusterTags={cluster.tags}
+            clusterUpdated={cluster.updated}
+            isClusterReadOnly={isClusterReadOnly}
+            isLoadingKubernetesACL={isLoadingKubernetesACL}
+            setControlPlaneACLDrawerOpen={setControlPlaneACLDrawerOpen}
+            showControlPlaneACL={!!showControlPlaneACL}
+          />
         }
         header={
           <EntityHeader>
@@ -267,6 +216,7 @@ export const KubeSummaryPanel = React.memo((props: Props) => {
         clusterLabel={cluster.label}
         clusterMigrated={!isErrorKubernetesACL}
         open={isControlPlaneACLDrawerOpen}
+        showControlPlaneACL={!!showControlPlaneACL}
       />
       <DeleteKubernetesClusterDialog
         clusterId={cluster.id}

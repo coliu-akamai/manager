@@ -396,6 +396,27 @@ export const mockGetControlPlaneACL = (
 };
 
 /**
+ * Intercepts GET request for a cluster's Control Plane ACL and mocks an error response
+ *
+ * @param clusterId - Numberic ID of LKE cluster for which to mock response.
+ * @param errorMessage - Optional error message with which to mock response.
+ * @param statusCode - HTTP status code with which to mock response.
+ *
+ * @returns Cypress chainable
+ */
+export const mockGetControlPlaneACLError = (
+  clusterId: number,
+  errorMessage: string = 'An unknown error occurred.',
+  statusCode: number = 500
+): Cypress.Chainable<null> => {
+  return cy.intercept(
+    'GET',
+    apiMatcher(`/lke/clusters/${clusterId}/control_plane_acl`),
+    makeErrorResponse(errorMessage, statusCode)
+  );
+};
+
+/**
  * Intercepts PUT request for a cluster's Control Plane ACL and mocks the response
  *
  * @param clusterId - Numberic ID of LKE cluster for which to mock response.
@@ -411,5 +432,26 @@ export const mockUpdateControlPlaneACL = (
     'PUT',
     apiMatcher(`/lke/clusters/${clusterId}/control_plane_acl`),
     makeResponse(controlPlaneACL)
+  );
+};
+
+/**
+ * Intercepts PUT request for a cluster's Control Plane ACL and mocks the response
+ *
+ * @param clusterId - Numberic ID of LKE cluster for which to mock response.
+ * @param errorMessage - Optional error message with which to mock response.
+ * @param statusCode - HTTP status code with which to mock response.
+ *
+ * @returns Cypress chainable.
+ */
+export const mockUpdateControlPlaneACLError = (
+  clusterId: number,
+  errorMessage: string = 'An unknown error occurred.',
+  statusCode: number = 500
+): Cypress.Chainable<null> => {
+  return cy.intercept(
+    'PUT',
+    apiMatcher(`/lke/clusters/${clusterId}/control_plane_acl`),
+    makeErrorResponse(errorMessage, statusCode)
   );
 };

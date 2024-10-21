@@ -382,7 +382,7 @@ describe('LKE Cluster Creation with DC-specific pricing', () => {
   });
 });
 
-describe.only('LKE Cluster Creation with ACL', () => {
+describe('LKE Cluster Creation with ACL', () => {
   it('does not show the ACL flow without the LKE ACL capability', () => {
     mockGetAccount(
       accountFactory.build({
@@ -707,7 +707,7 @@ describe.only('LKE Cluster Creation with ACL', () => {
      * - Confirms IP validation error disappears when a valid IP is entered
      * - Confirms API error appears as expected and doesn't crash the page
      */
-    it('can handle errors', () => {
+    it('can handle validation and API errors', () => {
       const mockErrorMessage = 'Control Plane ACL error: request failed';
       mockCreateClusterError(mockErrorMessage, 400).as('createClusterError');
 

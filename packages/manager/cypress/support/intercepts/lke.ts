@@ -19,6 +19,7 @@ import type {
   KubernetesControlPlaneACLPayload,
   KubernetesVersion,
 } from '@linode/api-v4';
+import { makeErrorResponse } from 'support/util/errors';
 
 /**
  * Intercepts GET request to retrieve Kubernetes versions and mocks response.
@@ -155,6 +156,25 @@ export const mockCreateCluster = (
     'POST',
     apiMatcher('lke/clusters'),
     makeResponse(cluster)
+  );
+};
+
+/**
+ * Intercepts POST request to create an LKE cluster and mocks an error response.
+ *
+ * @param errorMessage - Optional error message with which to mock response.
+ * @param statusCode - HTTP status code with which to mock response.
+ *
+ * @returns Cypress chainable.
+ */
+export const mockCreateClusterError = (
+  errorMessage: string = 'An unknown error occurred.',
+  statusCode: number = 500
+): Cypress.Chainable<null> => {
+  return cy.intercept(
+    'POST',
+    apiMatcher('lke/clusters'),
+    makeErrorResponse(errorMessage, statusCode)
   );
 };
 

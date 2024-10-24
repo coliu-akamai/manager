@@ -204,10 +204,40 @@ export const Default: Story = {
 
     const openMenuButton = canvas.getByLabelText('Open');
 
-    // open menu
-    await step('Open menu interaction', async () => {
+    /**
+     * the first four steps are equivalent to the open/close tests in autocomplete.spec.tsx
+     * Having trouble with 'Confirms autocomplete can be closed by clicking away' equivalent
+     * here though (no separate element)
+     */
+
+    // open menu via button
+    await step('Open menu interaction via button', async () => {
       await userEvent.click(openMenuButton);
       expect(canvas.getByText('Linode-001')).toBeVisible();
+    });
+
+    const closeMenuButton = canvas.getByLabelText('Close');
+
+    // close menu via button
+    await step('Close menu interaction via button', async () => {
+      await userEvent.click(closeMenuButton);
+      expect(canvas.queryByText('Linode-001')).not.toBeInTheDocument();
+    });
+
+    const input = canvas.getByLabelText('Select a Linode');
+
+    // open menu via typing
+    await step('Open menu interaction via typing', async () => {
+      await userEvent.clear(input);
+      await userEvent.type(input, 'linode');
+      expect(canvas.getByText('Linode-001')).toBeVisible();
+      await userEvent.click(canvas.getByText('Linode-001'));
+    });
+
+    // close menu via esc key
+    await step('Close menu interaction via esc key', async () => {
+      await userEvent.keyboard('{Escape}');
+      expect(canvas.queryByText('Linode-001')).not.toBeInTheDocument();
     });
 
     // clearing selected element
@@ -220,6 +250,7 @@ export const Default: Story = {
 
     // selecting a new value
     await step('Select a new value', async () => {
+      await userEvent.click(openMenuButton);
       const linode2 = canvas.getByText(/Linode-002/);
       await userEvent.click(linode2);
       expect(canvas.getByRole('combobox')).toHaveValue('Linode-002');

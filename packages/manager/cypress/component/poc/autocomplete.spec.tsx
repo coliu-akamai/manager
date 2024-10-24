@@ -106,7 +106,7 @@ componentTests('Autocomplete', (mount) => {
       });
 
       /**
-       * Confirms autocomplete can be closed by clicking awway
+       * Confirms autocomplete can be closed by clicking away
        */
       it('can close autocomplete popper by clicking away', () => {
         mount(

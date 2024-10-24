@@ -1,4 +1,5 @@
 import { updateUser } from '@linode/api-v4/lib/account';
+import { Box } from '@linode/ui';
 import { styled, useTheme } from '@mui/material/styles';
 import { createLazyRoute } from '@tanstack/react-router';
 import * as React from 'react';
@@ -7,7 +8,6 @@ import { useLocation } from 'react-router-dom';
 import { v4 } from 'uuid';
 
 import { Avatar } from 'src/components/Avatar/Avatar';
-import { Box } from 'src/components/Box';
 import { Button } from 'src/components/Button/Button';
 import { Divider } from 'src/components/Divider';
 import { Paper } from 'src/components/Paper';

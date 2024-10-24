@@ -1,10 +1,10 @@
+import { Box } from '@linode/ui';
 import { Tooltip } from '@linode/ui';
 import React from 'react';
 import { makeStyles } from 'tss-react/mui';
 
 import CloudInitIcon from 'src/assets/icons/cloud-init.svg';
 import DistributedRegionIcon from 'src/assets/icons/entityIcons/distributed-region.svg';
-import { Box } from 'src/components/Box';
 import { Option } from 'src/components/EnhancedSelect/components/Option';
 import { useFlags } from 'src/hooks/useFlags';
 

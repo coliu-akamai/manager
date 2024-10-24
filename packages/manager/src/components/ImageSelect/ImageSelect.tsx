@@ -1,3 +1,4 @@
+import { Box } from '@linode/ui';
 import produce from 'immer';
 import { DateTime } from 'luxon';
 import { equals, groupBy } from 'ramda';
@@ -15,7 +16,6 @@ import { arePropsEqual } from 'src/utilities/arePropsEqual';
 import { getAPIErrorOrDefault } from 'src/utilities/errorUtils';
 import { getSelectedOptionFromGroupedOptions } from 'src/utilities/getSelectedOptionFromGroupedOptions';
 
-import { Box } from '../Box';
 import { OS_ICONS } from '../OSIcon';
 import { Stack } from '../Stack';
 

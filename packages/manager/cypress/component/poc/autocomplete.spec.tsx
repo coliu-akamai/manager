@@ -6,8 +6,13 @@ import { createSpy } from 'support/util/components';
 
 import { Autocomplete } from 'src/components/Autocomplete/Autocomplete';
 
+type Option = {
+  label: string;
+  value: string;
+};
+
 componentTests('Autocomplete', (mount) => {
-  const options = Array.from({ length: 3 }, (_, index) => {
+  const options: Option[] = Array.from({ length: 3 }, (_, index) => {
     const num = index + 1;
     return {
       label: `my-option-${num}`,
@@ -420,16 +425,30 @@ componentTests('Autocomplete', (mount) => {
     describe('Multiselection', () => {
       /**
        * - Confirms multiple selections can be chosen
+       * - Confirms clear button clears all options
        */
-      it.skip('can select multiple options', () => {
-        mount(
-          <Autocomplete
-            label="Autocomplete"
-            multiple
-            onChange={() => {}}
-            options={options}
-          />
-        );
+      it('can select multiple options and clears all selected options', () => {
+        // figure out how to confirm multi selections
+        // input value doesn't work anymore... (this feels hacky)
+        const MultiSelect = () => {
+          const [selectedOptions, setSelectedOptions] = React.useState<
+            Option[]
+          >([]);
+          return (
+            <>
+              <div>Number of selected options: {selectedOptions.length}</div>
+              <Autocomplete
+                label="Linodes"
+                multiple
+                onChange={(_, value) => setSelectedOptions(value)}
+                options={options}
+                value={selectedOptions}
+              />
+            </>
+          );
+        };
+
+        mount(<MultiSelect />);
 
         ui.button
           .findByAttribute('title', 'Open')
@@ -442,22 +461,116 @@ componentTests('Autocomplete', (mount) => {
           .findByTitle(`${options[0].label}`)
           .should('be.visible')
           .click();
+        cy.findByText('Number of selected options: 1').should('be.visible');
 
         ui.autocompletePopper
           .findByTitle(`${options[1].label}`)
           .should('be.visible')
           .click();
+        cy.findByText('Number of selected options: 2').should('be.visible');
 
-        // figure out how to confirm multi selections
+        cy.findByLabelText('Clear')
+          .should('be.visible')
+          .should('be.enabled')
+          .click();
+
+        cy.findByText('Number of selected options: 0').should('be.visible');
       });
 
       /**
-       * - Confirms multiple options can be cleared
+       * - Confirms 'Select All' and 'Deselect All' work as expected
        */
-      it.skip('clears all chosen selections', () => {
-        // figure out how to confirm clearing
+      it('can select all and deselect all', () => {
+        const MultiSelect = () => {
+          const [selectedOptions, setSelectedOptions] = React.useState<
+            Option[]
+          >([]);
+          return (
+            <Autocomplete
+              label="Linodes"
+              multiple
+              onChange={(_, value) => setSelectedOptions(value)}
+              options={options}
+              value={selectedOptions}
+            />
+          );
+        };
+
+        mount(<MultiSelect />);
+
+        ui.button
+          .findByAttribute('title', 'Open')
+          .should('be.visible')
+          .should('be.enabled')
+          .click();
+
+        ui.autocompletePopper
+          .findByTitle('Select All')
+          .should('be.visible')
+          .click();
+
+        cy.findByLabelText('Clear').should('be.visible').should('be.enabled');
+
+        // After selecting all elements, 'Deselect All' appears as an option
+        ui.autocompletePopper
+          .findByTitle('Deselect All')
+          .should('be.visible')
+          .click();
+
+        cy.findByLabelText('Clear').should('not.exist');
+        ui.autocompletePopper.findByTitle('Select All').should('be.visible');
       });
 
+      /**
+       * - Confirms 'Deselect All' appears as long as all options are selected
+       * (even if 'Select All' wasn't clicked)
+       */
+      it('shows Deselect All as long as all options are selected', () => {
+        const MultiSelect = () => {
+          const [selectedOptions, setSelectedOptions] = React.useState<
+            Option[]
+          >([]);
+          return (
+            <Autocomplete
+              label="Linodes"
+              multiple
+              onChange={(_, value) => setSelectedOptions(value)}
+              options={options}
+              value={selectedOptions}
+            />
+          );
+        };
+
+        mount(<MultiSelect />);
+
+        ui.button
+          .findByAttribute('title', 'Open')
+          .should('be.visible')
+          .should('be.enabled')
+          .click();
+
+        // select all options manually
+        ui.autocompletePopper.findByTitle('Select All').should('be.visible');
+        ui.autocompletePopper
+          .findByTitle('my-option-1')
+          .should('be.visible')
+          .click();
+        ui.autocompletePopper
+          .findByTitle('my-option-2')
+          .should('be.visible')
+          .click();
+        ui.autocompletePopper
+          .findByTitle('my-option-3')
+          .should('be.visible')
+          .click();
+
+        // Confirm Deselect All appears, and Select All is hidden
+        ui.autocompletePopper.findByTitle('Deselect All').should('be.visible');
+      });
+
+      /**
+       * - Confirms popper remains open in multiselect after selecting an element
+       */
       it('keeps the popper open even after an element is selected', () => {
         mount(
           <Autocomplete

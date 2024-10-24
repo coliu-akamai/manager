@@ -173,7 +173,7 @@ componentTests('RegionSelect', (mount) => {
       });
 
       /*
-       * - User can can selection after having already selected a region.
+       * - User can change selection after having already selected a region.
        */
       it('can change region selection', () => {
         mount(

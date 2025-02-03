@@ -314,7 +314,6 @@ export const linodeFactory = Factory.Sync.makeFactory<Linode>({
 const linodeRequestBasePayload = {
   booted: true,
   image: 'linode/debian12',
-  label: Factory.each((i) => `linode-${i}`),
   region: 'us-southeast',
   root_pass: 'linode-root-password',
   type: 'g6-standard-1',
@@ -323,12 +322,14 @@ const linodeRequestBasePayload = {
 export const createLinodeRequestCMFactory = Factory.Sync.makeFactory<CreateLinodeWithInterfaceType>(
   {
     ...linodeRequestBasePayload,
+    label: Factory.each((i) => `linode-${i}`),
   }
 );
 
 export const createLinodeRequestFactory = Factory.Sync.makeFactory<CreateLinodeRequest>(
   {
     ...linodeRequestBasePayload,
+    label: Factory.each((i) => `linode-${i}`),
   }
 );
 

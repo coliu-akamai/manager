@@ -15,13 +15,9 @@ import { getQueryParamsFromQueryString } from 'src/utilities/queryParams';
 import { getDefaultUDFData } from './Tabs/StackScripts/UserDefinedFields/utilities';
 
 import type { StackScriptTabType } from './Tabs/StackScripts/utilities';
+import type { CreateInterfacePayload, CreateLinodeRequestCM } from './types';
 import type { LinodeCreateType } from './types';
-import type {
-  CreateInterfacePayload,
-  CreateLinodeRequest,
-  Linode,
-  Profile,
-} from '@linode/api-v4';
+import type { Linode, Profile } from '@linode/api-v4';
 import type { QueryClient } from '@tanstack/react-query';
 import type { FieldErrors } from 'react-hook-form';
 
@@ -147,7 +143,7 @@ export const tabs: LinodeCreateType[] = [
  */
 export const getLinodeCreatePayload = (
   formValues: LinodeCreateFormValues
-): CreateLinodeRequest => {
+): CreateLinodeRequestCM => {
   const values = omitProps(formValues, [
     'linode',
     'hasSignedEUAgreement',
@@ -260,7 +256,7 @@ const defaultInterfaces: CreateInterfacePayload[] = [
  * For any extra values added to the form, we should make sure `getLinodeCreatePayload`
  * removes them from the payload before it is sent to the API.
  */
-export interface LinodeCreateFormValues extends CreateLinodeRequest {
+export interface LinodeCreateFormValues extends CreateLinodeRequestCM {
   /**
    * Manually override firewall policy for sensitive users
    */

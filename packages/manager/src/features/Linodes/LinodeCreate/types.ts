@@ -1,3 +1,10 @@
+import type {
+  BaseCreateLinodeRequest,
+  CreateLinodeInterfacePayload,
+  InterfaceGenerationType,
+  InterfacePayload,
+} from '@linode/api-v4';
+
 export type LinodeCreateType =
   | 'Backups'
   | 'Clone Linode'
@@ -5,3 +12,38 @@ export type LinodeCreateType =
   | 'OS'
   | 'One-Click'
   | 'StackScripts';
+
+// TS typeguards with Interfaces
+export interface BaseInterface {
+  interfaceType?: InterfaceGenerationType;
+}
+
+export interface LinodeInterfacePayload
+  extends BaseInterface,
+    CreateLinodeInterfacePayload {
+  interfaceType: 'linode';
+}
+
+export interface LegacyInterfacePayload
+  extends BaseInterface,
+    InterfacePayload {
+  interfaceType: 'legacy_config';
+}
+
+export type CreateInterfacePayload =
+  | LegacyInterfacePayload
+  | LinodeInterfacePayload;
+
+/**
+ * This type is very similar to the API's CreateLinodeRequest type, except that
+ * all interfaces have additional information to determine which type (legacy or linode)
+ * of interface they are. When we send the request values back to the API,
+ * we strip out this information to maintain the shape of CreateLinodeRequest.
+ */
+export interface CreateLinodeRequestCM extends BaseCreateLinodeRequest {
+  /**
+   * An array of Network Interfaces to add to this Linode’s Configuration Profile.
+   * Types updated to include information on whether this is a legacy or linode interface
+   */
+  interfaces?: CreateInterfacePayload[];
+}

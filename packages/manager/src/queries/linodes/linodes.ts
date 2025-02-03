@@ -52,7 +52,6 @@ import {
 import type {
   APIError,
   Config,
-  CreateLinodeRequest,
   DeepPartial,
   Devices,
   Filter,
@@ -65,6 +64,8 @@ import type {
   ResizeLinodePayload,
   ResourcePage,
 } from '@linode/api-v4';
+import type { CreateLinodeRequestCM } from 'src/features/Linodes/LinodeCreate/types';
+import { omitProps } from '@linode/ui';
 
 export const linodeQueries = createQueryKeys('linodes', {
   kernel: (id: string) => ({
@@ -271,8 +272,14 @@ export const useDeleteLinodeMutation = (id: number) => {
 
 export const useCreateLinodeMutation = () => {
   const queryClient = useQueryClient();
-  return useMutation<Linode, APIError[], CreateLinodeRequest>({
-    mutationFn: createLinode,
+  return useMutation<Linode, APIError[], CreateLinodeRequestCM>({
+    mutationFn: ({ interfaces, ...data }) =>
+      createLinode({
+        ...data,
+        interfaces: interfaces?.map((iface) =>
+          omitProps(iface, ['interfaceType'])
+        ),
+      }),
     onSuccess(linode, variables) {
       queryClient.invalidateQueries(linodeQueries.linodes);
       queryClient.setQueryData<Linode>(

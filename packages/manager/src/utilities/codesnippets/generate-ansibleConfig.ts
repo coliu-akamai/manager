@@ -1,4 +1,4 @@
-import type { CreateLinodeRequest } from '@linode/api-v4/lib/linodes';
+import type { CreateLinodeRequestCM } from 'src/features/Linodes/LinodeCreate/types';
 
 /**
  * Escapes special characters in a string for use in YAML and shell commands.
@@ -14,7 +14,7 @@ function escapeYAMLString(str: string) {
  * @param {Object} config - Configuration details for the instance.
  * @returns {string} - The Ansible config as a string.
  */
-export function generateAnsibleConfig(config: CreateLinodeRequest): string {
+export function generateAnsibleConfig(config: CreateLinodeRequestCM): string {
   let configStr = `- name: Create a new Linode instance.\n  linode.cloud.instance:\n`;
 
   configStr += `    state: "present"\n`;

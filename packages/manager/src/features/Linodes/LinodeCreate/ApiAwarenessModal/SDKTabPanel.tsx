@@ -9,11 +9,11 @@ import { generatePythonLinodeSnippet } from 'src/utilities/codesnippets/generate
 import { GoSDKResources } from './GoSDKResources';
 import { PythonSDKResources } from './PythonSDKResources';
 
+import type { CreateLinodeRequestCM } from '../types';
 import type { OptionType } from './IntegrationsTabPanel';
-import type { CreateLinodeRequest } from '@linode/api-v4/lib/linodes';
 
 export interface SDKTabPanelProps {
-  payLoad: CreateLinodeRequest;
+  payLoad: CreateLinodeRequestCM;
   title: string;
 }
 

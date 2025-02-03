@@ -8,6 +8,7 @@ import {
   getLinodeLabelFromLabelParts,
   getTabIndex,
 } from './utilities';
+import { CreateLinodeRequestCM } from './types';
 
 describe('getTabIndex', () => {
   it('should return 0 when there is no value specifying the tab', () => {
@@ -26,7 +27,9 @@ describe('getLinodeCreatePayload', () => {
   it('should return a basic payload', () => {
     const values = createLinodeRequestFactory.build();
 
-    expect(getLinodeCreatePayload(values)).toEqual(values);
+    expect(getLinodeCreatePayload(values as CreateLinodeRequestCM)).toEqual(
+      values
+    );
   });
 
   it('should base64 encode metadata', () => {
@@ -34,7 +37,7 @@ describe('getLinodeCreatePayload', () => {
       metadata: { user_data: userData },
     });
 
-    expect(getLinodeCreatePayload(values)).toEqual({
+    expect(getLinodeCreatePayload(values as CreateLinodeRequestCM)).toEqual({
       ...values,
       metadata: { user_data: base64UserData },
     });
@@ -45,7 +48,7 @@ describe('getLinodeCreatePayload', () => {
       placement_group: {},
     });
 
-    expect(getLinodeCreatePayload(values)).toEqual({
+    expect(getLinodeCreatePayload(values as CreateLinodeRequestCM)).toEqual({
       ...values,
       placement_group: undefined,
     });

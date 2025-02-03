@@ -18,12 +18,12 @@ import { IntegrationsTabPanel } from './IntegrationsTabPanel';
 import { LinodeCLIPanel } from './LinodeCLIPanel';
 import { SDKTabPanel } from './SDKTabPanel';
 
-import type { CreateLinodeRequest } from '@linode/api-v4/lib/linodes';
+import type { CreateLinodeRequestCM } from '../types';
 
 export interface ApiAwarenessModalProps {
   isOpen: boolean;
   onClose: () => void;
-  payLoad: CreateLinodeRequest;
+  payLoad: CreateLinodeRequestCM;
 }
 
 export const tabs = [

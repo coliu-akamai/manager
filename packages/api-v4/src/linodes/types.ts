@@ -340,28 +340,6 @@ export interface UpgradeInterfaceData {
   interfaces: LinodeInterface[];
 }
 
-// TS typeguards with Interfaces - move to CM package. this is currently incorrect
-// and messes with the shape of CreateLinodeRequest when it shouldn't
-export interface BaseInterface {
-  interfaceType?: InterfaceGenerationType;
-}
-
-export interface LinodeInterfacePayload
-  extends BaseInterface,
-    CreateLinodeInterfacePayload {
-  interfaceType: 'linode';
-}
-
-export interface LegacyInterfacePayload
-  extends BaseInterface,
-    InterfacePayload {
-  interfaceType: 'legacy_config';
-}
-
-export type CreateInterfacePayload =
-  | LegacyInterfacePayload
-  | LinodeInterfacePayload;
-
 // ----------------------------------------------------------
 
 export interface DiskDevice {
@@ -513,7 +491,7 @@ export interface CreateLinodePlacementGroupPayload {
   compliant_only?: boolean;
 }
 
-export interface CreateLinodeRequest {
+export interface BaseCreateLinodeRequest {
   /**
    * The Linode Type of the Linode you are creating.
    */
@@ -600,10 +578,6 @@ export interface CreateLinodeRequest {
    */
   authorized_users?: string[];
   /**
-   * An array of Network Interfaces to add to this Linode’s Configuration Profile.
-   */
-  interfaces?: CreateInterfacePayload[];
-  /**
    * When present, used by the API to determine what type of interface objects (legacy
    * config interfaces or new Linode Interfaces) are in the above interfaces field.
    * Can either be 'legacy_config' or 'linode'.
@@ -642,6 +616,13 @@ export interface CreateLinodeRequest {
    * @default 'enabled' (if the region supports LDE)
    */
   disk_encryption?: EncryptionStatus;
+}
+
+export interface CreateLinodeRequest extends BaseCreateLinodeRequest {
+  /**
+   * An array of Network Interfaces to add to this Linode’s Configuration Profile.
+   */
+  interfaces?: InterfacePayload[] | CreateLinodeInterfacePayload[];
 }
 
 export interface MigrateLinodeRequest {

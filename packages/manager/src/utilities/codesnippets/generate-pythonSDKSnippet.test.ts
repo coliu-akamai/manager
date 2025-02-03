@@ -1,9 +1,10 @@
 import { generatePythonLinodeSnippet } from './generate-pythonSDKSnippet';
 
-import type { CreateLinodeRequest } from '@linode/api-v4/lib/linodes';
+import type { CreateLinodeRequestCM } from 'src/features/Linodes/LinodeCreate/types';
+
 describe('generatePythonLinodeSnippet', () => {
   it('should correctly generates Python snippet for creating a Linode instance with all possible fields', () => {
-    const config: CreateLinodeRequest = {
+    const config: CreateLinodeRequestCM = {
       authorized_keys: ['ssh-rsa AAAAB3Nza...'],
       backups_enabled: true,
       firewall_id: 289203,

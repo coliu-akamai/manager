@@ -1,13 +1,13 @@
 import { escapeStringForCLI } from '../escapeStringForCLI';
 
-import type { CreateLinodeRequest } from '@linode/api-v4/lib/linodes';
+import type { CreateLinodeRequestCM } from 'src/features/Linodes/LinodeCreate/types';
 
 /**
  * Generates a Terraform config to setup a Linode instance.
  * @param {Object} config - The configuration object for the Linode instance.
  * @returns {string} - Bash commands to write a Terraform config.
  */
-export function generateTerraformConfig(config: CreateLinodeRequest): string {
+export function generateTerraformConfig(config: CreateLinodeRequestCM): string {
   let terraformConfig = `resource "linode_instance" "web" {\n`;
 
   if (config.label) {

@@ -340,7 +340,8 @@ export interface UpgradeInterfaceData {
   interfaces: LinodeInterface[];
 }
 
-// TS typeguards with Interfaces
+// TS typeguards with Interfaces - move to CM package. this is currently incorrect
+// and messes with the shape of CreateLinodeRequest when it shouldn't
 export interface BaseInterface {
   interfaceType?: InterfaceGenerationType;
 }

@@ -52,6 +52,7 @@ import type {
   VLAN,
   Region,
   Kernel,
+  InterfaceGenerationType,
 } from '@linode/api-v4';
 
 /**
@@ -178,13 +179,13 @@ describe('Linode Config management', () => {
       // Config interfaces to use when creating test Linode.
       const interfaces = [
         {
-          interface_type: 'legacy_config',
+          interfaceType: 'legacy_config' as InterfaceGenerationType,
           ipam_address: '',
           label: '',
           purpose: 'public' as InterfacePurpose,
         },
         {
-          interface_type: 'legacy_config',
+          interfaceType: 'legacy_config' as InterfaceGenerationType,
           ipam_address: '',
           label: 'testvlan',
           purpose: 'vlan' as InterfacePurpose,

@@ -307,9 +307,6 @@ export const useCreateLinodeMutation = () => {
         vpcInterface?.interfaceType === 'legacy_config'
           ? vpcInterface.vpc_id
           : undefined;
-      // const vpcId = variables.interfaces?.find(
-      //   (i) => i.interfaceType === 'legacy_config' && i.purpose === 'vpc'
-      // )?.vpc_id;
 
       if (vpcId) {
         // If a Linode is created with a VPC, invalidate the related VPC queries.

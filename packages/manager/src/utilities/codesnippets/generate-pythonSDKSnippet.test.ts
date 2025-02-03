@@ -10,17 +10,19 @@ describe('generatePythonLinodeSnippet', () => {
       image: 'linode/ubuntu20.04',
       interfaces: [
         {
+          interfaceType: 'legacy_config',
           ip_ranges: ['192.168.0.1/24'],
           ipam_address: '192.168.0.1',
-          label: 'main-interface',
-          purpose: 'public',
-          subnet_id: 69513,
           ipv4: {
             nat_1_1: '192.168.1.100',
             vpc: '192.168.2.0',
           },
+          label: 'main-interface',
+          purpose: 'public',
+          subnet_id: 69513,
         },
         {
+          interfaceType: 'legacy_config',
           ipam_address: '192.168.0.1',
           label: 'test',
           purpose: 'vpc',

@@ -339,6 +339,28 @@ export interface UpgradeInterfaceData {
   dry_run: boolean;
   interfaces: LinodeInterface[];
 }
+
+// TS typeguards with Interfaces
+export interface BaseInterface {
+  interfaceType?: InterfaceGenerationType;
+}
+
+export interface LinodeInterfacePayload
+  extends BaseInterface,
+    CreateLinodeInterfacePayload {
+  interfaceType: 'linode';
+}
+
+export interface LegacyInterfacePayload
+  extends BaseInterface,
+    InterfacePayload {
+  interfaceType: 'legacy_config';
+}
+
+export type CreateInterfacePayload =
+  | LegacyInterfacePayload
+  | LinodeInterfacePayload;
+
 // ----------------------------------------------------------
 
 export interface DiskDevice {
@@ -579,7 +601,7 @@ export interface CreateLinodeRequest {
   /**
    * An array of Network Interfaces to add to this Linode’s Configuration Profile.
    */
-  interfaces?: InterfacePayload[] | CreateLinodeInterfacePayload[];
+  interfaces?: CreateInterfacePayload[];
   /**
    * When present, used by the API to determine what type of interface objects (legacy
    * config interfaces or new Linode Interfaces) are in the above interfaces field.

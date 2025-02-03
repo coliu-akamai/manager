@@ -12,6 +12,7 @@ describe('generateTerraformConfig', () => {
       image: 'linode/ubuntu20.04',
       interfaces: [
         {
+          interfaceType: 'legacy_config',
           ip_ranges: ['192.168.1.1/32'],
           ipam_address: '192.0.0.0/24',
           ipv4: {
@@ -22,6 +23,7 @@ describe('generateTerraformConfig', () => {
           purpose: 'public',
         },
         {
+          interfaceType: 'legacy_config',
           ipam_address: '192.0.0.0/24',
           label: 'test',
           purpose: 'vlan',

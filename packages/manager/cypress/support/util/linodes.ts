@@ -11,16 +11,17 @@ import { depaginate } from './paginate';
 
 import type {
   Config,
+  CreateInterfacePayload,
   CreateLinodeRequest,
-  InterfacePayload,
   Linode,
 } from '@linode/api-v4';
 
 /**
  * Linode create interface to configure a Linode with no public internet access.
  */
-export const linodeVlanNoInternetConfig: InterfacePayload[] = [
+export const linodeVlanNoInternetConfig: CreateInterfacePayload[] = [
   {
+    interfaceType: 'legacy_config',
     ipam_address: null,
     label: randomLabel(),
     primary: false,

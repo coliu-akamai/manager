@@ -58,16 +58,19 @@ describe('getInterfacesPayload', () => {
       getInterfacesPayload(
         [
           {
+            interfaceType: 'legacy_config',
             ipam_address: '',
             label: '',
             purpose: 'vpc',
           },
           {
+            interfaceType: 'legacy_config',
             ipam_address: '',
             label: '',
             purpose: 'vlan',
           },
           {
+            interfaceType: 'legacy_config',
             ipam_address: '',
             label: '',
             purpose: 'public',
@@ -83,16 +86,19 @@ describe('getInterfacesPayload', () => {
       getInterfacesPayload(
         [
           {
+            interfaceType: 'legacy_config',
             ipam_address: '',
             label: '',
             purpose: 'vpc',
           },
           {
+            interfaceType: 'legacy_config',
             ipam_address: '',
             label: 'my-vlan',
             purpose: 'vlan',
           },
           {
+            interfaceType: 'legacy_config',
             ipam_address: '',
             label: '',
             purpose: 'public',
@@ -102,11 +108,13 @@ describe('getInterfacesPayload', () => {
       )
     ).toStrictEqual([
       {
+        interfaceType: 'legacy_config',
         ipam_address: '',
         label: '',
         purpose: 'public',
       },
       {
+        interfaceType: 'legacy_config',
         ipam_address: '',
         label: 'my-vlan',
         purpose: 'vlan',
@@ -119,16 +127,19 @@ describe('getInterfacesPayload', () => {
       getInterfacesPayload(
         [
           {
+            interfaceType: 'legacy_config',
             ipam_address: '',
             label: '',
             purpose: 'vpc',
           },
           {
+            interfaceType: 'legacy_config',
             ipam_address: '',
             label: 'my-vlan',
             purpose: 'vlan',
           },
           {
+            interfaceType: 'legacy_config',
             ipam_address: '',
             label: '',
             purpose: 'public',
@@ -138,11 +149,13 @@ describe('getInterfacesPayload', () => {
       )
     ).toStrictEqual([
       {
+        interfaceType: 'legacy_config',
         ipam_address: '',
         label: '',
         purpose: 'public',
       },
       {
+        interfaceType: 'legacy_config',
         ipam_address: '',
         label: 'my-vlan',
         purpose: 'vlan',
@@ -155,6 +168,7 @@ describe('getInterfacesPayload', () => {
       getInterfacesPayload(
         [
           {
+            interfaceType: 'legacy_config',
             ipam_address: '',
             label: '',
             // Confirms VPC interface passed in is returned as expected - VPC interfaces should be marked as primary if they exist
@@ -163,11 +177,13 @@ describe('getInterfacesPayload', () => {
             vpc_id: 5,
           },
           {
+            interfaceType: 'legacy_config',
             ipam_address: '',
             label: '',
             purpose: 'vlan',
           },
           {
+            interfaceType: 'legacy_config',
             ipam_address: '',
             label: '',
             purpose: 'public',
@@ -177,6 +193,7 @@ describe('getInterfacesPayload', () => {
       )
     ).toStrictEqual([
       {
+        interfaceType: 'legacy_config',
         ipam_address: '',
         label: '',
         primary: true,
@@ -191,6 +208,7 @@ describe('getInterfacesPayload', () => {
       getInterfacesPayload(
         [
           {
+            interfaceType: 'legacy_config',
             ipam_address: '',
             label: '',
             primary: true,
@@ -198,11 +216,13 @@ describe('getInterfacesPayload', () => {
             vpc_id: 5,
           },
           {
+            interfaceType: 'legacy_config',
             ipam_address: '',
             label: '',
             purpose: 'vlan',
           },
           {
+            interfaceType: 'legacy_config',
             ipam_address: '',
             label: '',
             purpose: 'public',
@@ -212,6 +232,7 @@ describe('getInterfacesPayload', () => {
       )
     ).toStrictEqual([
       {
+        interfaceType: 'legacy_config',
         ipam_address: '',
         label: '',
         primary: true,
@@ -219,6 +240,7 @@ describe('getInterfacesPayload', () => {
         vpc_id: 5,
       },
       {
+        interfaceType: 'legacy_config',
         ipam_address: '',
         label: '',
         purpose: 'public',
@@ -231,6 +253,7 @@ describe('getInterfacesPayload', () => {
       getInterfacesPayload(
         [
           {
+            interfaceType: 'legacy_config',
             ipam_address: '',
             label: '',
             primary: true,
@@ -238,11 +261,13 @@ describe('getInterfacesPayload', () => {
             vpc_id: 5,
           },
           {
+            interfaceType: 'legacy_config',
             ipam_address: '',
             label: 'my-vlan',
             purpose: 'vlan',
           },
           {
+            interfaceType: 'legacy_config',
             ipam_address: '',
             label: '',
             purpose: 'public',
@@ -252,6 +277,7 @@ describe('getInterfacesPayload', () => {
       )
     ).toStrictEqual([
       {
+        interfaceType: 'legacy_config',
         ipam_address: '',
         label: '',
         primary: true,
@@ -259,6 +285,7 @@ describe('getInterfacesPayload', () => {
         vpc_id: 5,
       },
       {
+        interfaceType: 'legacy_config',
         ipam_address: '',
         label: 'my-vlan',
         purpose: 'vlan',
@@ -271,6 +298,7 @@ describe('getInterfacesPayload', () => {
       getInterfacesPayload(
         [
           {
+            interfaceType: 'legacy_config',
             ipam_address: '',
             label: '',
             primary: true,
@@ -278,11 +306,13 @@ describe('getInterfacesPayload', () => {
             vpc_id: 5,
           },
           {
+            interfaceType: 'legacy_config',
             ipam_address: '',
             label: 'my-vlan',
             purpose: 'vlan',
           },
           {
+            interfaceType: 'legacy_config',
             ipam_address: '',
             label: '',
             purpose: 'public',
@@ -292,6 +322,7 @@ describe('getInterfacesPayload', () => {
       )
     ).toStrictEqual([
       {
+        interfaceType: 'legacy_config',
         ipam_address: '',
         label: '',
         primary: true,
@@ -299,11 +330,13 @@ describe('getInterfacesPayload', () => {
         vpc_id: 5,
       },
       {
+        interfaceType: 'legacy_config',
         ipam_address: '',
         label: 'my-vlan',
         purpose: 'vlan',
       },
       {
+        interfaceType: 'legacy_config',
         ipam_address: '',
         label: '',
         purpose: 'public',

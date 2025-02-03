@@ -1,9 +1,4 @@
-import type {
-  CreateLinodeRequest,
-  InterfacePayload,
-} from '@linode/api-v4/lib/linodes';
-
-// @TODO Linode Interfaces - fix/address casting
+import type { CreateLinodeRequest } from '@linode/api-v4/lib/linodes';
 
 /**
  * Escapes special characters in a string for use in Python strings.
@@ -61,43 +56,45 @@ export function generatePythonLinodeSnippet(
   // Handling interfaces
   if (config.interfaces && config.interfaces.length > 0) {
     snippet += '    interfaces=[\n';
-    config.interfaces.forEach((iface: InterfacePayload) => {
-      snippet += `        {\n`;
-      if (iface.label) {
-        snippet += `            "label": "${escapePythonString(
-          iface.label
-        )}",\n`;
-      }
-      if (iface.ipv4 && (iface.ipv4?.nat_1_1 || iface.ipv4?.vpc)) {
-        snippet += `            "ipv4": {\n`;
-        if (iface.ipv4?.nat_1_1) {
-          snippet += `                "nat_1_1": "${iface.ipv4.nat_1_1}",\n`;
+    config.interfaces.forEach((iface) => {
+      if (iface.interfaceType === 'legacy_config') {
+        snippet += `        {\n`;
+        if (iface.label) {
+          snippet += `            "label": "${escapePythonString(
+            iface.label
+          )}",\n`;
         }
-        if (iface.ipv4?.vpc) {
-          snippet += `                "vpc": "${iface.ipv4.vpc}",\n`;
+        if (iface.ipv4 && (iface.ipv4?.nat_1_1 || iface.ipv4?.vpc)) {
+          snippet += `            "ipv4": {\n`;
+          if (iface.ipv4?.nat_1_1) {
+            snippet += `                "nat_1_1": "${iface.ipv4.nat_1_1}",\n`;
+          }
+          if (iface.ipv4?.vpc) {
+            snippet += `                "vpc": "${iface.ipv4.vpc}",\n`;
+          }
+          snippet += `            },\n`;
         }
-        snippet += `            },\n`;
+        if (iface.purpose) {
+          snippet += `            "purpose": "${escapePythonString(
+            iface.purpose
+          )}",\n`;
+        }
+        if (iface.ipam_address) {
+          snippet += `            "ipam_address": "${escapePythonString(
+            iface.ipam_address
+          )}",\n`;
+        }
+        if (iface.subnet_id) {
+          snippet += `            "subnet_id": ${iface.subnet_id},\n`;
+        }
+        if (iface.ip_ranges && iface.ip_ranges.length > 0) {
+          const ipRanges = iface.ip_ranges
+            .map((range) => `"${escapePythonString(range)}"`)
+            .join(', ');
+          snippet += `            "ip_ranges": [${ipRanges}],\n`;
+        }
+        snippet += '        },\n';
       }
-      if (iface.purpose) {
-        snippet += `            "purpose": "${escapePythonString(
-          iface.purpose
-        )}",\n`;
-      }
-      if (iface.ipam_address) {
-        snippet += `            "ipam_address": "${escapePythonString(
-          iface.ipam_address
-        )}",\n`;
-      }
-      if (iface.subnet_id) {
-        snippet += `            "subnet_id": ${iface.subnet_id},\n`;
-      }
-      if (iface.ip_ranges && iface.ip_ranges.length > 0) {
-        const ipRanges = iface.ip_ranges
-          .map((range) => `"${escapePythonString(range)}"`)
-          .join(', ');
-        snippet += `            "ip_ranges": [${ipRanges}],\n`;
-      }
-      snippet += '        },\n';
     });
     snippet += '    ],\n';
   }

@@ -1,9 +1,4 @@
-import type {
-  CreateLinodeRequest,
-  InterfacePayload,
-} from '@linode/api-v4/lib/linodes';
-
-// @TODO Linode Interfaces - fix/address casting
+import type { CreateLinodeRequest } from '@linode/api-v4/lib/linodes';
 
 /**
  * Escapes special characters in a string for use in YAML and shell commands.
@@ -82,32 +77,34 @@ export function generateAnsibleConfig(config: CreateLinodeRequest): string {
   }
   if (config.interfaces && config.interfaces.length > 0) {
     configStr += `    interfaces:\n`;
-    config.interfaces.forEach((iface: InterfacePayload) => {
-      configStr += `      - purpose: "${escapeYAMLString(iface.purpose)}"\n`;
-      if (iface.subnet_id) {
-        configStr += `        subnet_id: ${iface.subnet_id}\n`;
-      }
-      if (iface.ip_ranges && iface.ip_ranges.length > 0) {
-        configStr += `        ip_ranges:\n          - ${iface.ip_ranges
-          .map((ip) => `"${escapeYAMLString(ip)}"`)
-          .join('\n          - ')}\n`;
-      }
-      if (iface.ipv4 && (iface.ipv4?.nat_1_1 || iface.ipv4?.vpc)) {
-        configStr += `        ipv4:\n`;
-        if (iface.ipv4.nat_1_1) {
-          configStr += `          nat_1_1: "${iface.ipv4.nat_1_1}"\n`;
+    config.interfaces.forEach((iface) => {
+      if (iface.interfaceType === 'legacy_config') {
+        configStr += `      - purpose: "${escapeYAMLString(iface.purpose)}"\n`;
+        if (iface.subnet_id) {
+          configStr += `        subnet_id: ${iface.subnet_id}\n`;
         }
-        if (iface.ipv4.vpc) {
-          configStr += `          vpc: "${iface.ipv4.vpc}"\n`;
+        if (iface.ip_ranges && iface.ip_ranges.length > 0) {
+          configStr += `        ip_ranges:\n          - ${iface.ip_ranges
+            .map((ip) => `"${escapeYAMLString(ip)}"`)
+            .join('\n          - ')}\n`;
         }
-      }
-      if (iface.label) {
-        configStr += `        label: "${escapeYAMLString(iface.label)}"\n`;
-      }
-      if (iface.ipam_address) {
-        configStr += `        ipam_address: "${escapeYAMLString(
-          iface.ipam_address
-        )}"\n`;
+        if (iface.ipv4 && (iface.ipv4?.nat_1_1 || iface.ipv4?.vpc)) {
+          configStr += `        ipv4:\n`;
+          if (iface.ipv4.nat_1_1) {
+            configStr += `          nat_1_1: "${iface.ipv4.nat_1_1}"\n`;
+          }
+          if (iface.ipv4.vpc) {
+            configStr += `          vpc: "${iface.ipv4.vpc}"\n`;
+          }
+        }
+        if (iface.label) {
+          configStr += `        label: "${escapeYAMLString(iface.label)}"\n`;
+        }
+        if (iface.ipam_address) {
+          configStr += `        ipam_address: "${escapeYAMLString(
+            iface.ipam_address
+          )}"\n`;
+        }
       }
     });
   }

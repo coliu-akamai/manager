@@ -1,11 +1,6 @@
 import { escapeStringForCLI } from '../escapeStringForCLI';
 
-import type {
-  CreateLinodeRequest,
-  InterfacePayload,
-} from '@linode/api-v4/lib/linodes';
-
-// @TODO Linode Interfaces - fix/address casting
+import type { CreateLinodeRequest } from '@linode/api-v4/lib/linodes';
 
 /**
  * Generates a Terraform config to setup a Linode instance.
@@ -40,34 +35,36 @@ export function generateTerraformConfig(config: CreateLinodeRequest): string {
   }
 
   if (config.interfaces && config.interfaces.length > 0) {
-    config.interfaces.forEach((interfaceConfig: InterfacePayload) => {
-      terraformConfig += `  interface {\n    purpose = "${interfaceConfig.purpose}"\n`;
-      if (interfaceConfig.subnet_id) {
-        terraformConfig += `    subnet_id = ${interfaceConfig.subnet_id}\n`;
-      }
-      if (interfaceConfig.ip_ranges && interfaceConfig.ip_ranges.length > 0) {
-        const ip_rangesFormatted = interfaceConfig.ip_ranges
-          ?.map((ip_range) => `"${ip_range}"`)
-          ?.join(', ');
-        terraformConfig += `    ip_ranges = [${ip_rangesFormatted}]\n`;
-      }
-      if (interfaceConfig.ipv4?.nat_1_1 || interfaceConfig.ipv4?.vpc) {
-        terraformConfig += `    ipv4 {\n`;
-        if (interfaceConfig.ipv4.nat_1_1) {
-          terraformConfig += `      nat_1_1 = "${interfaceConfig.ipv4.nat_1_1}"\n`;
+    config.interfaces.forEach((interfaceConfig) => {
+      if (interfaceConfig.interfaceType === 'legacy_config') {
+        terraformConfig += `  interface {\n    purpose = "${interfaceConfig.purpose}"\n`;
+        if (interfaceConfig.subnet_id) {
+          terraformConfig += `    subnet_id = ${interfaceConfig.subnet_id}\n`;
         }
-        if (interfaceConfig.ipv4.vpc) {
-          terraformConfig += `      vpc = "${interfaceConfig.ipv4.vpc}"\n`;
+        if (interfaceConfig.ip_ranges && interfaceConfig.ip_ranges.length > 0) {
+          const ip_rangesFormatted = interfaceConfig.ip_ranges
+            ?.map((ip_range) => `"${ip_range}"`)
+            ?.join(', ');
+          terraformConfig += `    ip_ranges = [${ip_rangesFormatted}]\n`;
         }
-        terraformConfig += `    }\n`;
+        if (interfaceConfig.ipv4?.nat_1_1 || interfaceConfig.ipv4?.vpc) {
+          terraformConfig += `    ipv4 {\n`;
+          if (interfaceConfig.ipv4.nat_1_1) {
+            terraformConfig += `      nat_1_1 = "${interfaceConfig.ipv4.nat_1_1}"\n`;
+          }
+          if (interfaceConfig.ipv4.vpc) {
+            terraformConfig += `      vpc = "${interfaceConfig.ipv4.vpc}"\n`;
+          }
+          terraformConfig += `    }\n`;
+        }
+        if (interfaceConfig.label) {
+          terraformConfig += `    label = "${interfaceConfig.label}"\n`;
+        }
+        if (interfaceConfig.ipam_address) {
+          terraformConfig += `    ipam_address = "${interfaceConfig.ipam_address}"\n`;
+        }
+        terraformConfig += `  }\n`;
       }
-      if (interfaceConfig.label) {
-        terraformConfig += `    label = "${interfaceConfig.label}"\n`;
-      }
-      if (interfaceConfig.ipam_address) {
-        terraformConfig += `    ipam_address = "${interfaceConfig.ipam_address}"\n`;
-      }
-      terraformConfig += `  }\n`;
     });
   }
   if (config.authorized_users && config.authorized_users.length > 0) {

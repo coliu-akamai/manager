@@ -17,8 +17,8 @@ import { getDefaultUDFData } from './Tabs/StackScripts/UserDefinedFields/utiliti
 import type { StackScriptTabType } from './Tabs/StackScripts/utilities';
 import type { LinodeCreateType } from './types';
 import type {
+  CreateInterfacePayload,
   CreateLinodeRequest,
-  InterfacePayload,
   Linode,
   Profile,
 } from '@linode/api-v4';
@@ -166,8 +166,7 @@ export const getLinodeCreatePayload = (
   }
 
   values.interfaces = getInterfacesPayload(
-    // @TODO Linode Interfaces - fix/address casting
-    values.interfaces as InterfacePayload[],
+    values.interfaces,
     Boolean(values.private_ip)
   );
 
@@ -183,9 +182,9 @@ export const getLinodeCreatePayload = (
  * @returns a transformed interfaces array in the correct order and with the expected values for the API
  */
 export const getInterfacesPayload = (
-  interfaces: InterfacePayload[] | undefined,
+  interfaces: CreateInterfacePayload[] | undefined,
   hasPrivateIP: boolean | undefined
-): InterfacePayload[] | undefined => {
+): CreateInterfacePayload[] | undefined => {
   if (!interfaces) {
     return undefined;
   }
@@ -193,9 +192,15 @@ export const getInterfacesPayload = (
   const vpcInterface = interfaces[0];
   const vlanInterface = interfaces[1];
   const publicInterface = interfaces[2];
+  let hasVPC = false;
+  let hasVLAN = false;
+  if (vpcInterface.interfaceType === 'legacy_config') {
+    hasVPC = Boolean(vpcInterface.vpc_id);
+  }
 
-  const hasVPC = Boolean(vpcInterface.vpc_id);
-  const hasVLAN = Boolean(vlanInterface.label);
+  if (vlanInterface.interfaceType === 'legacy_config') {
+    hasVLAN = Boolean(vlanInterface.label);
+  }
 
   if (hasVPC && hasVLAN && hasPrivateIP) {
     return [vpcInterface, vlanInterface, publicInterface];
@@ -223,19 +228,22 @@ export const getInterfacesPayload = (
   return undefined;
 };
 
-const defaultInterfaces: InterfacePayload[] = [
+const defaultInterfaces: CreateInterfacePayload[] = [
   {
+    interfaceType: 'legacy_config',
     ipam_address: '',
     label: '',
     primary: true,
     purpose: 'vpc',
   },
   {
+    interfaceType: 'legacy_config',
     ipam_address: '',
     label: '',
     purpose: 'vlan',
   },
   {
+    interfaceType: 'legacy_config',
     ipam_address: '',
     label: '',
     purpose: 'public',

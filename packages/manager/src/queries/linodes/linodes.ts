@@ -56,7 +56,6 @@ import type {
   DeepPartial,
   Devices,
   Filter,
-  InterfacePayload,
   Kernel,
   Linode,
   LinodeCloneData,
@@ -285,9 +284,8 @@ export const useCreateLinodeMutation = () => {
       queryClient.invalidateQueries(profileQueries.grants);
 
       if (
-        // @TODO Linode Interfaces - fix/address casting
-        (variables.interfaces as InterfacePayload[])?.some(
-          (i) => i.purpose === 'vlan'
+        variables.interfaces?.some(
+          (i) => i.interfaceType === 'legacy_config' && i.purpose === 'vlan'
         )
       ) {
         // If a Linode is created with a VLAN, invalidate vlans because
@@ -295,10 +293,16 @@ export const useCreateLinodeMutation = () => {
         queryClient.invalidateQueries({ queryKey: vlanQueries._def });
       }
 
-      // @TODO Linode Interfaces - fix/address casting
-      const vpcId = (variables.interfaces as InterfacePayload[])?.find(
-        (i) => i.purpose === 'vpc'
-      )?.vpc_id;
+      const vpcInterface = variables.interfaces?.find(
+        (i) => i.interfaceType === 'legacy_config' && i.purpose === 'vpc'
+      );
+      const vpcId =
+        vpcInterface?.interfaceType === 'legacy_config'
+          ? vpcInterface.vpc_id
+          : undefined;
+      // const vpcId = variables.interfaces?.find(
+      //   (i) => i.interfaceType === 'legacy_config' && i.purpose === 'vpc'
+      // )?.vpc_id;
 
       if (vpcId) {
         // If a Linode is created with a VPC, invalidate the related VPC queries.

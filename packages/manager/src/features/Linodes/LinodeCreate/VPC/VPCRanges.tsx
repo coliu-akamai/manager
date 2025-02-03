@@ -5,10 +5,10 @@ import { Controller, useFieldArray, useFormContext } from 'react-hook-form';
 
 import { LinkButton } from 'src/components/LinkButton';
 
-import type { CreateLinodeRequest } from '@linode/api-v4';
+import type { CreateLinodeWithInterfaceType } from '../types';
 
 export const VPCRanges = () => {
-  const { control } = useFormContext<CreateLinodeRequest>();
+  const { control } = useFormContext<CreateLinodeWithInterfaceType>();
 
   const { append, fields, remove } = useFieldArray({
     control,

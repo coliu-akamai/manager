@@ -9,10 +9,10 @@ import { useRestrictedGlobalGrantCheck } from 'src/hooks/useRestrictedGlobalGran
 import { useLinodeCreateQueryParams } from '../utilities';
 import { PlacementGroupPanel } from './PlacementGroupPanel';
 
-import type { CreateLinodeRequest } from '@linode/api-v4';
+import type { CreateLinodeWithInterfaceType } from '../types';
 
 export const Details = () => {
-  const { control } = useFormContext<CreateLinodeRequest>();
+  const { control } = useFormContext<CreateLinodeWithInterfaceType>();
   const { isPlacementGroupsEnabled } = useIsPlacementGroupsEnabled();
 
   const { params } = useLinodeCreateQueryParams();

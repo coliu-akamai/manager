@@ -11,7 +11,7 @@ import { getMarketplaceAppLabel } from '../../Marketplace/utilities';
 import { UserDefinedFieldInput } from './UserDefinedFieldInput';
 import { separateUDFsByRequiredStatus } from './utilities';
 
-import type { CreateLinodeRequest } from '@linode/api-v4';
+import type { CreateLinodeWithInterfaceType } from '../../../types';
 
 interface Props {
   /**
@@ -24,7 +24,10 @@ interface Props {
 }
 
 export const UserDefinedFields = ({ onOpenDetailsDrawer }: Props) => {
-  const { control, formState } = useFormContext<CreateLinodeRequest>();
+  const {
+    control,
+    formState,
+  } = useFormContext<CreateLinodeWithInterfaceType>();
 
   const [stackscriptId, stackscriptData] = useWatch({
     control,

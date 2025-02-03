@@ -4,13 +4,13 @@ import { useFormContext } from 'react-hook-form';
 
 import { ErrorMessage } from 'src/components/ErrorMessage';
 
-import type { CreateLinodeRequest } from '@linode/api-v4';
+import type { CreateLinodeWithInterfaceType } from './types';
 
 export const Error = () => {
   const {
     formState: { errors },
     getValues,
-  } = useFormContext<CreateLinodeRequest>();
+  } = useFormContext<CreateLinodeWithInterfaceType>();
 
   const generalError = errors.root?.message ?? errors.interfaces?.message;
   const values = getValues();

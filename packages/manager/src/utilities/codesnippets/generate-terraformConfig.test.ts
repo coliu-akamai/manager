@@ -1,10 +1,10 @@
 import { generateTerraformConfig } from './generate-terraformConfig';
 
-import type { CreateLinodeRequestCM } from 'src/features/Linodes/LinodeCreate/types';
+import type { CreateLinodeWithInterfaceType } from 'src/features/Linodes/LinodeCreate/types';
 
 describe('generateTerraformConfig', () => {
   it('should generate correct configuration with all properties', () => {
-    const config: CreateLinodeRequestCM = {
+    const config: CreateLinodeWithInterfaceType = {
       authorized_keys: ['ssh-rsa AAA...'],
       authorized_users: ['user123'],
       backup_id: 67890,

@@ -10,12 +10,12 @@ import { generateCLICommand } from 'src/utilities/codesnippets/generate-cli';
 
 import { useLinodeCreateQueryParams } from '../utilities';
 
-import type { CreateLinodeRequestCM } from '../types';
+import type { CreateLinodeWithInterfaceType } from '../types';
 import type { LinodeCreateFormValues } from '../utilities';
 
 export interface LinodeCLIPanelProps {
   index: number;
-  payLoad: CreateLinodeRequestCM;
+  payLoad: CreateLinodeWithInterfaceType;
   title: string;
 }
 

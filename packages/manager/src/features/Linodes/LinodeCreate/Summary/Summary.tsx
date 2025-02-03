@@ -13,13 +13,13 @@ import { renderMonthlyPriceToCorrectDecimalPlace } from 'src/utilities/pricing/d
 
 import { getLinodePrice } from './utilities';
 
-import type { CreateLinodeRequest } from '@linode/api-v4';
+import type { CreateLinodeWithInterfaceType } from '../types';
 
 export const Summary = () => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
 
-  const { control } = useFormContext<CreateLinodeRequest>();
+  const { control } = useFormContext<CreateLinodeWithInterfaceType>();
 
   const [
     label,

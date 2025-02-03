@@ -23,6 +23,7 @@ import {
   scheduleOrQueueMigration,
   updateLinode,
 } from '@linode/api-v4';
+import { omitProps } from '@linode/ui';
 import { createQueryKeys } from '@lukemorales/query-key-factory';
 import {
   keepPreviousData,
@@ -64,8 +65,7 @@ import type {
   ResizeLinodePayload,
   ResourcePage,
 } from '@linode/api-v4';
-import type { CreateLinodeRequestCM } from 'src/features/Linodes/LinodeCreate/types';
-import { omitProps } from '@linode/ui';
+import type { CreateLinodeWithInterfaceType } from 'src/features/Linodes/LinodeCreate/types';
 
 export const linodeQueries = createQueryKeys('linodes', {
   kernel: (id: string) => ({
@@ -272,7 +272,7 @@ export const useDeleteLinodeMutation = (id: number) => {
 
 export const useCreateLinodeMutation = () => {
   const queryClient = useQueryClient();
-  return useMutation<Linode, APIError[], CreateLinodeRequestCM>({
+  return useMutation<Linode, APIError[], CreateLinodeWithInterfaceType>({
     mutationFn: ({ interfaces, ...data }) =>
       createLinode({
         ...data,

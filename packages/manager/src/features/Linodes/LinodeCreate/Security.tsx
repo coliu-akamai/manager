@@ -16,14 +16,14 @@ import { Skeleton } from 'src/components/Skeleton';
 import { useRestrictedGlobalGrantCheck } from 'src/hooks/useRestrictedGlobalGrantCheck';
 import { useRegionsQuery } from 'src/queries/regions/regions';
 
-import type { CreateLinodeRequest } from '@linode/api-v4';
+import type { CreateLinodeWithInterfaceType } from './types';
 
 const PasswordInput = React.lazy(
   () => import('src/components/PasswordInput/PasswordInput')
 );
 
 export const Security = () => {
-  const { control } = useFormContext<CreateLinodeRequest>();
+  const { control } = useFormContext<CreateLinodeWithInterfaceType>();
 
   const {
     isDiskEncryptionFeatureEnabled,

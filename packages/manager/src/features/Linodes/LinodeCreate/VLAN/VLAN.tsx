@@ -17,10 +17,10 @@ import { doesRegionSupportFeature } from 'src/utilities/doesRegionSupportFeature
 import { useLinodeCreateQueryParams } from '../utilities';
 import { VLANAvailabilityNotice } from './VLANAvailabilityNotice';
 
-import type { CreateLinodeRequest } from '@linode/api-v4';
+import type { CreateLinodeWithInterfaceType } from '../types';
 
 export const VLAN = () => {
-  const { control } = useFormContext<CreateLinodeRequest>();
+  const { control } = useFormContext<CreateLinodeWithInterfaceType>();
 
   const { data: regions } = useRegionsQuery();
 

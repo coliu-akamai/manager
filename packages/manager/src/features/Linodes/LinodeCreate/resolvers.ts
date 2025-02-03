@@ -13,7 +13,7 @@ import {
 } from './schemas';
 import { getLinodeCreatePayload } from './utilities';
 
-import type { CreateLinodeRequestCM, LinodeCreateType } from './types';
+import type { CreateLinodeWithInterfaceType, LinodeCreateType } from './types';
 import type {
   LinodeCreateFormContext,
   LinodeCreateFormValues,
@@ -31,7 +31,7 @@ export const getLinodeCreateResolver = (
     const transformedValues = getLinodeCreatePayload(structuredClone(values));
 
     const { errors } = await yupResolver(
-      schema as ObjectSchema<CreateLinodeRequestCM>,
+      schema as ObjectSchema<CreateLinodeWithInterfaceType>,
       {},
       { mode: 'async', raw: true }
     )(transformedValues, context, options);

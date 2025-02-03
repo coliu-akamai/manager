@@ -1,4 +1,4 @@
-import { createLinodeRequestFactory } from 'src/factories';
+import { createLinodeRequestCMFactory } from 'src/factories';
 import { base64UserData, userData } from 'src/utilities/metadata.test';
 
 import {
@@ -8,7 +8,6 @@ import {
   getLinodeLabelFromLabelParts,
   getTabIndex,
 } from './utilities';
-import { CreateLinodeRequestCM } from './types';
 
 describe('getTabIndex', () => {
   it('should return 0 when there is no value specifying the tab', () => {
@@ -25,30 +24,28 @@ describe('getTabIndex', () => {
 
 describe('getLinodeCreatePayload', () => {
   it('should return a basic payload', () => {
-    const values = createLinodeRequestFactory.build();
+    const values = createLinodeRequestCMFactory.build();
 
-    expect(getLinodeCreatePayload(values as CreateLinodeRequestCM)).toEqual(
-      values
-    );
+    expect(getLinodeCreatePayload(values)).toEqual(values);
   });
 
   it('should base64 encode metadata', () => {
-    const values = createLinodeRequestFactory.build({
+    const values = createLinodeRequestCMFactory.build({
       metadata: { user_data: userData },
     });
 
-    expect(getLinodeCreatePayload(values as CreateLinodeRequestCM)).toEqual({
+    expect(getLinodeCreatePayload(values)).toEqual({
       ...values,
       metadata: { user_data: base64UserData },
     });
   });
 
   it('should remove placement_group from the payload if no id exists', () => {
-    const values = createLinodeRequestFactory.build({
+    const values = createLinodeRequestCMFactory.build({
       placement_group: {},
     });
 
-    expect(getLinodeCreatePayload(values as CreateLinodeRequestCM)).toEqual({
+    expect(getLinodeCreatePayload(values)).toEqual({
       ...values,
       placement_group: undefined,
     });

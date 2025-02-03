@@ -15,6 +15,7 @@ import type {
   Stats,
   StatsData,
 } from '@linode/api-v4';
+import type { CreateLinodeWithInterfaceType } from 'src/features/Linodes/LinodeCreate/types';
 
 export const linodeAlertsFactory = Factory.Sync.makeFactory<LinodeAlerts>({
   cpu: 10,
@@ -310,14 +311,24 @@ export const linodeFactory = Factory.Sync.makeFactory<Linode>({
   watchdog_enabled: true,
 });
 
+const linodeRequestBasePayload = {
+  booted: true,
+  image: 'linode/debian12',
+  label: Factory.each((i) => `linode-${i}`),
+  region: 'us-southeast',
+  root_pass: 'linode-root-password',
+  type: 'g6-standard-1',
+};
+
+export const createLinodeRequestCMFactory = Factory.Sync.makeFactory<CreateLinodeWithInterfaceType>(
+  {
+    ...linodeRequestBasePayload,
+  }
+);
+
 export const createLinodeRequestFactory = Factory.Sync.makeFactory<CreateLinodeRequest>(
   {
-    booted: true,
-    image: 'linode/debian12',
-    label: Factory.each((i) => `linode-${i}`),
-    region: 'us-southeast',
-    root_pass: 'linode-root-password',
-    type: 'g6-standard-1',
+    ...linodeRequestBasePayload,
   }
 );
 

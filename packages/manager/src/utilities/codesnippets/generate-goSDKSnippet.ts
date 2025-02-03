@@ -1,4 +1,4 @@
-import type { CreateLinodeRequestCM } from 'src/features/Linodes/LinodeCreate/types';
+import type { CreateLinodeWithInterfaceType } from 'src/features/Linodes/LinodeCreate/types';
 
 /**
  * Escapes special characters in a string for use in Go strings.
@@ -14,7 +14,9 @@ function escapeGoString(value: string): string {
  * @param {CreateLinodeRequest} config - Configuration details for the instance.
  * @returns {string} - The Go code snippet.
  */
-export function generateGoLinodeSnippet(config: CreateLinodeRequestCM): string {
+export function generateGoLinodeSnippet(
+  config: CreateLinodeWithInterfaceType
+): string {
   let snippet = 'linodeClient.CreateInstance(\n';
   snippet += '    context.Background(),\n';
   snippet += '    linodego.InstanceCreateOptions{\n';

@@ -29,14 +29,17 @@ import { doesRegionSupportFeature } from 'src/utilities/doesRegionSupportFeature
 import { useLinodeCreateQueryParams } from '../utilities';
 import { VPCRanges } from './VPCRanges';
 
-import type { CreateLinodeRequest, InterfacePayload } from '@linode/api-v4';
+import type {
+  CreateLinodeWithInterfaceType,
+  LegacyInterfaceWithTypePayload,
+} from '../types';
 import type { FieldError, FieldErrorsImpl, Merge } from 'react-hook-form';
 import type { LinodeCreateFormEventOptions } from 'src/utilities/analytics/types';
 
 // @TODO Linode Interfaces - clean this up/fix/address casting :/
 type InterfaceFieldErrors = Merge<
   FieldError,
-  FieldErrorsImpl<InterfacePayload[]>
+  FieldErrorsImpl<LegacyInterfaceWithTypePayload[]>
 >;
 
 export const VPC = () => {
@@ -46,7 +49,7 @@ export const VPC = () => {
     control,
     formState,
     setValue,
-  } = useFormContext<CreateLinodeRequest>();
+  } = useFormContext<CreateLinodeWithInterfaceType>();
 
   const { data: regions } = useRegionsQuery();
 

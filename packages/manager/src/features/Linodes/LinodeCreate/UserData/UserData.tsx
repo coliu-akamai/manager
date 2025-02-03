@@ -9,10 +9,10 @@ import { useRegionsQuery } from 'src/queries/regions/regions';
 
 import { UserDataHeading } from './UserDataHeading';
 
-import type { CreateLinodeRequest } from '@linode/api-v4';
+import type { CreateLinodeWithInterfaceType } from '../types';
 
 export const UserData = () => {
-  const { control } = useFormContext<CreateLinodeRequest>();
+  const { control } = useFormContext<CreateLinodeWithInterfaceType>();
 
   const regionId = useWatch({ control, name: 'region' });
   const imageId = useWatch({ control, name: 'image' });

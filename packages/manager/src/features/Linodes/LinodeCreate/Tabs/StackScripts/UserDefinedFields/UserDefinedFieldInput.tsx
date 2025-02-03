@@ -24,7 +24,8 @@ import {
   getIsUDFSingleSelect,
 } from './utilities';
 
-import type { CreateLinodeRequest, UserDefinedField } from '@linode/api-v4';
+import type { CreateLinodeWithInterfaceType } from '../../../types';
+import type { UserDefinedField } from '@linode/api-v4';
 
 interface Props {
   userDefinedField: UserDefinedField;
@@ -33,9 +34,12 @@ interface Props {
 export const UserDefinedFieldInput = ({ userDefinedField }: Props) => {
   const isRequired = getIsUDFRequired(userDefinedField);
 
-  const { control, formState } = useFormContext<CreateLinodeRequest>();
+  const {
+    control,
+    formState,
+  } = useFormContext<CreateLinodeWithInterfaceType>();
 
-  const { field } = useController<CreateLinodeRequest>({
+  const { field } = useController<CreateLinodeWithInterfaceType>({
     control,
     name: `stackscript_data.${userDefinedField.name}`,
   });

@@ -12,11 +12,11 @@ import { useLinodeCreateQueryParams } from '../../utilities';
 import { StackScriptSelectionList } from './StackScriptSelectionList';
 import { getStackScriptTabIndex, tabs } from './utilities';
 
-import type { CreateLinodeRequest } from '@linode/api-v4';
+import type { CreateLinodeWithInterfaceType } from '../../types';
 
 export const StackScriptSelection = () => {
   const { params, updateParams } = useLinodeCreateQueryParams();
-  const { formState, reset } = useFormContext<CreateLinodeRequest>();
+  const { formState, reset } = useFormContext<CreateLinodeWithInterfaceType>();
 
   const onTabChange = (index: number) => {
     // Update the "subtype" query param. (This switches between "Community" and "Account" tabs).

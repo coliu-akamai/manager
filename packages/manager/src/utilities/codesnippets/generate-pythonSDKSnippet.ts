@@ -1,4 +1,4 @@
-import type { CreateLinodeRequestCM } from 'src/features/Linodes/LinodeCreate/types';
+import type { CreateLinodeWithInterfaceType } from 'src/features/Linodes/LinodeCreate/types';
 
 /**
  * Escapes special characters in a string for use in Python strings.
@@ -15,7 +15,7 @@ function escapePythonString(value: string): string {
  * @returns {string} - Python code as a string.
  */
 export function generatePythonLinodeSnippet(
-  config: CreateLinodeRequestCM
+  config: CreateLinodeWithInterfaceType
 ): string {
   let snippet = "client = LinodeClient(token=os.getenv('LINODE_TOKEN'))\n";
   snippet += 'new_linode = client.linode.instance_create(\n';

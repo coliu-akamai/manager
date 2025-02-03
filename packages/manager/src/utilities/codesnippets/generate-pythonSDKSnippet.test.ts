@@ -1,10 +1,10 @@
 import { generatePythonLinodeSnippet } from './generate-pythonSDKSnippet';
 
-import type { CreateLinodeRequestCM } from 'src/features/Linodes/LinodeCreate/types';
+import type { CreateLinodeWithInterfaceType } from 'src/features/Linodes/LinodeCreate/types';
 
 describe('generatePythonLinodeSnippet', () => {
   it('should correctly generates Python snippet for creating a Linode instance with all possible fields', () => {
-    const config: CreateLinodeRequestCM = {
+    const config: CreateLinodeWithInterfaceType = {
       authorized_keys: ['ssh-rsa AAAAB3Nza...'],
       backups_enabled: true,
       firewall_id: 289203,

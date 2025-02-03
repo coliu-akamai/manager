@@ -45,7 +45,7 @@ import {
   communityStackScriptFilter,
 } from './utilities';
 
-import type { CreateLinodeRequestCM } from '../../types';
+import type { CreateLinodeWithInterfaceType } from '../../types';
 import type { StackScriptTabType } from './utilities';
 
 interface Props {
@@ -69,7 +69,7 @@ export const StackScriptSelectionList = ({ type }: Props) => {
     },
     getValues,
     setValue,
-  } = useFormContext<CreateLinodeRequestCM>();
+  } = useFormContext<CreateLinodeWithInterfaceType>();
 
   const { field } = useController({
     control,

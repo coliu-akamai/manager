@@ -233,7 +233,14 @@ export const AddLinodeDrawer = (props: Props) => {
   );
 
   const firewallEntities = React.useMemo(
-    () => data?.map((firewall) => firewall.entities).flat(),
+    () =>
+      data
+        ?.map((firewall) => {
+          return firewall.entities.map((entity) => {
+            return { ...entity, firewallStatus: firewall.status };
+          });
+        })
+        .flat(),
     [data]
   );
 
@@ -242,13 +249,8 @@ export const AddLinodeDrawer = (props: Props) => {
     [firewallEntities]
   );
 
-  const assignedInterfaceIds = React.useMemo(
-    () =>
-      new Set<number>(
-        firewallEntities
-          ?.filter((service) => service.type === 'interface')
-          ?.map((service) => service.id) ?? []
-      ),
+  const assignedInterfaces = React.useMemo(
+    () => firewallEntities?.filter((service) => service.type === 'interface'),
     [firewallEntities]
   );
 
@@ -273,9 +275,17 @@ export const AddLinodeDrawer = (props: Props) => {
         const linodeId = linode.id;
         const interfaces = await getLinodeInterfaces(linodeId);
         // vlan interfaces cannot have a firewall assigned to them
-        const assignableInterfaces = interfaces.interfaces.filter(
-          (iface) => !iface.vlan && !assignedInterfaceIds.has(iface.id)
-        );
+        const assignableInterfaces = interfaces.interfaces.filter((iface) => {
+          return (
+            !iface.vlan &&
+            (firewall?.status !== 'enabled' ||
+              !assignedInterfaces?.some(
+                (service) =>
+                  service.id === iface.id &&
+                  service.firewallStatus === 'enabled'
+              ))
+          );
+        });
 
         if (assignableInterfaces.length === 1) {
           _interfacesToAddMap.set(linodeId, {
@@ -330,19 +340,31 @@ export const AddLinodeDrawer = (props: Props) => {
 
   React.useEffect(() => {
     const linodeOptionsFilter = async (linode: Linode) => {
+      if (readOnlyLinodeIds.includes(linode.id)) {
+        return false;
+      }
+
+      // If this firewall is enabled, we can only assign additional firewalls as long as the entity doesn't have another enabled firewall
       if (linode.interface_generation === 'linode') {
         const interfaces = await getLinodeInterfaces(linode.id);
         // Return true if Linode has some non-vlan interface that is not assigned to a firewall
-        return (
-          !readOnlyLinodeIds.includes(linode.id) &&
-          interfaces.interfaces.some(
-            (iface) => !iface.vlan && !assignedInterfaceIds.has(iface.id)
-          )
+        return interfaces.interfaces.some(
+          (iface) =>
+            !iface.vlan &&
+            (firewall?.status !== 'enabled' ||
+              !assignedInterfaces?.some(
+                (service) =>
+                  service.id === iface.id &&
+                  service.firewallStatus === 'enabled'
+              ))
         );
       }
       return (
-        !readOnlyLinodeIds.includes(linode.id) &&
-        !assignedLinodes?.some((service) => service.id === linode.id)
+        firewall?.status !== 'enabled' ||
+        !assignedLinodes?.some(
+          (service) =>
+            service.id === linode.id && service.firewallStatus === 'enabled'
+        )
       );
     };
 
@@ -357,7 +379,13 @@ export const AddLinodeDrawer = (props: Props) => {
     };
 
     filterLinodes();
-  }, [allLinodes, assignedInterfaceIds, assignedLinodes, readOnlyLinodeIds]);
+  }, [
+    allLinodes,
+    assignedInterfaces,
+    assignedLinodes,
+    firewall?.status,
+    readOnlyLinodeIds,
+  ]);
 
   React.useEffect(() => {
     if (error) {

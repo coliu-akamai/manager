@@ -128,7 +128,14 @@ export const VLANSelect = (props: Props) => {
       loading={isFetching}
       noMarginTop
       noOptionsText="You have no VLANs in this region. Type to create one."
-      onBlur={onBlur}
+      onBlur={() => {
+        if (onBlur) {
+          onBlur();
+        }
+        if (!value) {
+          setInputValue('');
+        }
+      }}
       onChange={(event, value) => {
         if (onChange) {
           onChange(value?.label ?? null);

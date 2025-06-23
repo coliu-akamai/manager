@@ -14,7 +14,7 @@ import type { Action } from 'src/components/ActionMenu/ActionMenu';
 
 interface Props {
   disabledFromInterfaces: boolean;
-  hasPublicLinodeInterface?: boolean;
+  hasPublicInterface?: boolean;
   ipAddress: IPAddress | IPRange;
   ipType: IPTypes;
   isLinodeInterface: boolean;
@@ -28,7 +28,7 @@ export const LinodeNetworkingActionMenu = (props: Props) => {
   const theme = useTheme<Theme>();
   const matchesMdDown = useMediaQuery(theme.breakpoints.down('lg'));
   const {
-    hasPublicLinodeInterface,
+    hasPublicInterface,
     ipAddress,
     ipType,
     isOnlyPublicIP,
@@ -61,9 +61,10 @@ export const LinodeNetworkingActionMenu = (props: Props) => {
     ? 'Linodes must have at least one public IP'
     : undefined;
 
-  const linodeInterfacePublicIPCopy = hasPublicLinodeInterface
-    ? 'This Public IP Address is provisionally reserved but not the default route. To update this, please review your Interface Settings.'
-    : 'This Public IP Address is provisionally reserved but not assigned to a network interface.';
+  const linodeInterfacePublicIPCopy =
+    isLinodeInterface && hasPublicInterface
+      ? 'This Public IP Address is provisionally reserved but not the default route. To update this, please review your Interface Settings.'
+      : 'This Public IP Address is provisionally reserved but not assigned to a network interface.';
 
   const isPublicIPNotAssignedCopy = isLinodeInterface
     ? linodeInterfacePublicIPCopy

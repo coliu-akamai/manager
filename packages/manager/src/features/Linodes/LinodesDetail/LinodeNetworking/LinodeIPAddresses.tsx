@@ -24,8 +24,8 @@ import { TableCell } from 'src/components/TableCell';
 import { TableHead } from 'src/components/TableHead';
 import { TableRow } from 'src/components/TableRow';
 import { TableSortCell } from 'src/components/TableSortCell';
+import { useDetermineReachableIPs } from 'src/hooks/useDetermineReachableIPs';
 import { useIsResourceRestricted } from 'src/hooks/useIsResourceRestricted';
-import { useVPCInterface } from 'src/hooks/useVPCInterface';
 import { useIsLinodeInterfacesEnabled } from 'src/utilities/linodes';
 
 import { AddIPDrawer } from './AddIPDrawer';
@@ -79,8 +79,8 @@ export const LinodeIPAddresses = (props: LinodeIPAddressesProps) => {
 
   const isLinodeInterface = linode?.interface_generation === 'linode';
 
-  const { hasLinodeInterfaces, hasPublicLinodeInterface, isVPCOnlyLinode } =
-    useVPCInterface({
+  const { hasLinodeInterfaces, hasPublicInterface, isVPCOnlyLinode } =
+    useDetermineReachableIPs({
       isLinodeInterface,
       linodeId: linodeID,
     });
@@ -254,7 +254,7 @@ export const LinodeIPAddresses = (props: LinodeIPAddressesProps) => {
                       {...ipDisplay}
                       {...handlers}
                       hasLinodeInterfaces={hasLinodeInterfaces}
-                      hasPublicLinodeInterface={hasPublicLinodeInterface}
+                      hasPublicInterface={hasPublicInterface}
                       isLinodeInterface={isLinodeInterface}
                       isVPCOnlyLinode={isVPCOnlyLinode}
                       key={`${ipDisplay.address}-${ipDisplay.type}`}

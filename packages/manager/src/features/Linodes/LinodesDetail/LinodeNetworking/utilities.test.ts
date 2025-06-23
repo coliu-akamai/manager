@@ -6,7 +6,7 @@ describe('disableIPRow', () => {
       expect(
         disableIPRow({
           hasLinodeInterfaces: false,
-          hasPublicLinodeInterface: false,
+          hasPublicInterface: false,
           isVPCOnlyLinode: false,
           ipType: 'Public – IPv4',
           isLinodeInterface: true,
@@ -16,7 +16,7 @@ describe('disableIPRow', () => {
       expect(
         disableIPRow({
           hasLinodeInterfaces: false,
-          hasPublicLinodeInterface: false,
+          hasPublicInterface: false,
           isVPCOnlyLinode: false,
           ipType: 'Public – IPv6 – SLAAC',
           isLinodeInterface: true,
@@ -28,7 +28,7 @@ describe('disableIPRow', () => {
       expect(
         disableIPRow({
           hasLinodeInterfaces: true,
-          hasPublicLinodeInterface: false,
+          hasPublicInterface: false,
           isVPCOnlyLinode: true,
           ipType: 'Public – IPv4',
           isLinodeInterface: true,
@@ -38,7 +38,7 @@ describe('disableIPRow', () => {
       expect(
         disableIPRow({
           hasLinodeInterfaces: true,
-          hasPublicLinodeInterface: false,
+          hasPublicInterface: false,
           isVPCOnlyLinode: true,
           ipType: 'Public – IPv6 – SLAAC',
           isLinodeInterface: true,
@@ -50,7 +50,7 @@ describe('disableIPRow', () => {
       expect(
         disableIPRow({
           hasLinodeInterfaces: true,
-          hasPublicLinodeInterface: true,
+          hasPublicInterface: true,
           isVPCOnlyLinode: true,
           ipType: 'Public – IPv4',
           isLinodeInterface: true,
@@ -60,7 +60,7 @@ describe('disableIPRow', () => {
       expect(
         disableIPRow({
           hasLinodeInterfaces: true,
-          hasPublicLinodeInterface: true,
+          hasPublicInterface: true,
           isVPCOnlyLinode: true,
           ipType: 'Public – IPv6 – SLAAC',
           isLinodeInterface: true,
@@ -72,7 +72,7 @@ describe('disableIPRow', () => {
       expect(
         disableIPRow({
           hasLinodeInterfaces: true,
-          hasPublicLinodeInterface: true,
+          hasPublicInterface: true,
           isVPCOnlyLinode: false,
           ipType: 'Public – IPv4',
           isLinodeInterface: true,
@@ -82,7 +82,7 @@ describe('disableIPRow', () => {
       expect(
         disableIPRow({
           hasLinodeInterfaces: true,
-          hasPublicLinodeInterface: true,
+          hasPublicInterface: true,
           isVPCOnlyLinode: false,
           ipType: 'Public – IPv6 – SLAAC',
           isLinodeInterface: true,
@@ -94,7 +94,7 @@ describe('disableIPRow', () => {
       expect(
         disableIPRow({
           hasLinodeInterfaces: true,
-          hasPublicLinodeInterface: false,
+          hasPublicInterface: false,
           isVPCOnlyLinode: false,
           ipType: 'Public – IPv4',
           isLinodeInterface: true,
@@ -104,7 +104,7 @@ describe('disableIPRow', () => {
       expect(
         disableIPRow({
           hasLinodeInterfaces: true,
-          hasPublicLinodeInterface: false,
+          hasPublicInterface: false,
           isVPCOnlyLinode: false,
           ipType: 'Public – IPv6 – SLAAC',
           isLinodeInterface: true,
@@ -114,13 +114,45 @@ describe('disableIPRow', () => {
   });
 
   describe('legacy interfaces', () => {
-    it('it disables IPv4 if isVPCOnlyLinode is true', () => {
+    it('it disables IPv4 but enables IPv6 if isVPCOnlyLinode is true and hasPublicInterfaces is true', () => {
       expect(
         disableIPRow({
           hasLinodeInterfaces: undefined,
-          hasPublicLinodeInterface: undefined,
+          hasPublicInterface: true,
           isVPCOnlyLinode: true,
           ipType: 'Public – IPv4',
+          isLinodeInterface: false,
+        })
+      ).toBe(true);
+
+      expect(
+        disableIPRow({
+          hasLinodeInterfaces: undefined,
+          hasPublicInterface: true,
+          isVPCOnlyLinode: true,
+          ipType: 'Public – IPv6 – SLAAC',
+          isLinodeInterface: false,
+        })
+      ).toBe(false);
+    });
+
+    it('it disables IPv4 and IPv6 if isVPCOnlyLinode is true and hasPublicInterfaces is false', () => {
+      expect(
+        disableIPRow({
+          hasLinodeInterfaces: undefined,
+          hasPublicInterface: false,
+          isVPCOnlyLinode: true,
+          ipType: 'Public – IPv4',
+          isLinodeInterface: false,
+        })
+      ).toBe(true);
+
+      expect(
+        disableIPRow({
+          hasLinodeInterfaces: undefined,
+          hasPublicInterface: false,
+          isVPCOnlyLinode: true,
+          ipType: 'Public – IPv6 – SLAAC',
           isLinodeInterface: false,
         })
       ).toBe(true);

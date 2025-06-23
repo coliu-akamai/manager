@@ -12,8 +12,8 @@ import { EntityDetail } from 'src/components/EntityDetail/EntityDetail';
 import { getIsDistributedRegion } from 'src/components/RegionSelect/RegionSelect.utils';
 import { getRestrictedResourceText } from 'src/features/Account/utils';
 import { notificationCenterContext as _notificationContext } from 'src/features/NotificationCenter/NotificationCenterContext';
+import { useDetermineReachableIPs } from 'src/hooks/useDetermineReachableIPs';
 import { useIsResourceRestricted } from 'src/hooks/useIsResourceRestricted';
-import { useVPCInterface } from 'src/hooks/useVPCInterface';
 import { useInProgressEvents } from 'src/queries/events/events';
 
 import { LinodeEntityDetailBody } from './LinodeEntityDetailBody';
@@ -65,11 +65,11 @@ export const LinodeEntityDetail = (props: Props) => {
 
   const {
     configs,
-    hasPublicLinodeInterface,
+    hasPublicInterface,
     interfaceWithVPC,
     isVPCOnlyLinode,
     vpcLinodeIsAssignedTo,
-  } = useVPCInterface({
+  } = useDetermineReachableIPs({
     isLinodeInterface,
     linodeId: linode.id,
   });
@@ -128,7 +128,7 @@ export const LinodeEntityDetail = (props: Props) => {
             encryptionStatus={linode.disk_encryption}
             gbRAM={linode.specs.memory / 1024}
             gbStorage={linode.specs.disk / 1024}
-            hasPublicLinodeInterface={hasPublicLinodeInterface}
+            hasPublicInterface={hasPublicInterface}
             interfaceGeneration={linode.interface_generation}
             interfaceWithVPC={interfaceWithVPC}
             ipv4={linode.ipv4}

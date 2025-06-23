@@ -64,7 +64,7 @@ export interface BodyProps {
   encryptionStatus: EncryptionStatus | undefined;
   gbRAM: number;
   gbStorage: number;
-  hasPublicLinodeInterface: boolean | undefined;
+  hasPublicInterface: boolean;
   interfaceGeneration: InterfaceGenerationType | undefined;
   interfaceWithVPC?: Interface | LinodeInterface;
   ipv4: Linode['ipv4'];
@@ -88,7 +88,7 @@ export const LinodeEntityDetailBody = React.memo((props: BodyProps) => {
     encryptionStatus,
     gbRAM,
     gbStorage,
-    hasPublicLinodeInterface,
+    hasPublicInterface,
     interfaceGeneration,
     interfaceWithVPC,
     ipv4,
@@ -279,7 +279,7 @@ export const LinodeEntityDetailBody = React.memo((props: BodyProps) => {
                 ) : undefined
               }
               gridSize={{ lg: 5, xs: 12 }}
-              hasPublicLinodeInterface={hasPublicLinodeInterface}
+              hasPublicInterface={hasPublicInterface}
               isLinodeInterface={isLinodeInterface}
               isVPCOnlyLinode={isVPCOnlyLinode}
               rows={[
@@ -299,7 +299,7 @@ export const LinodeEntityDetailBody = React.memo((props: BodyProps) => {
             />
             <AccessTable
               gridSize={{ lg: 7, xs: 12 }}
-              hasPublicLinodeInterface={hasPublicLinodeInterface}
+              hasPublicInterface={hasPublicInterface}
               isLinodeInterface={isLinodeInterface}
               isVPCOnlyLinode={isVPCOnlyLinode}
               rows={[

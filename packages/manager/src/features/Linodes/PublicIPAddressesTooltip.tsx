@@ -15,15 +15,16 @@ const sxTooltipIcon = {
 };
 
 export const PublicIPAddressesTooltip = ({
-  hasPublicLinodeInterface,
+  hasPublicInterface,
   isLinodeInterface,
 }: {
-  hasPublicLinodeInterface: boolean | undefined;
+  hasPublicInterface: boolean | undefined;
   isLinodeInterface: boolean;
 }) => {
-  const linodeInterfaceCopy = hasPublicLinodeInterface
-    ? PUBLIC_IP_ADDRESSES_LINODE_INTERFACE_DEFAULT_ROUTE_TOOLTIP_TEXT
-    : PUBLIC_IP_ADDRESSES_LINODE_INTERFACE_NOT_ASSIGNED_TOOLTIP_TEXT;
+  const linodeInterfaceCopy =
+    isLinodeInterface && hasPublicInterface
+      ? PUBLIC_IP_ADDRESSES_LINODE_INTERFACE_DEFAULT_ROUTE_TOOLTIP_TEXT
+      : PUBLIC_IP_ADDRESSES_LINODE_INTERFACE_NOT_ASSIGNED_TOOLTIP_TEXT;
   return (
     <TooltipIcon
       status="help"

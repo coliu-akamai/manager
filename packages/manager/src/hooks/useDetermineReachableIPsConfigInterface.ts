@@ -4,7 +4,7 @@ import { getPrimaryInterfaceIndex } from 'src/features/Linodes/LinodesDetail/Lin
 
 import type { Interface } from '@linode/api-v4/lib/linodes/types';
 
-export const useVPCConfigInterface = (
+export const useDetermineReachableIPsConfigInterface = (
   linodeId: number,
   enabled: boolean = true
 ) => {
@@ -33,6 +33,12 @@ export const useVPCConfigInterface = (
     (_interface) => _interface.id === configInterfaceWithVPC?.id
   );
 
+  const hasPublicConfigInterface = Boolean(
+    configWithVPCInterface?.interfaces?.some(
+      (_interface) => _interface.purpose === 'public'
+    )
+  );
+
   const { data: vpcLinodeIsAssignedTo } = useVPCQuery(
     configInterfaceWithVPC?.vpc_id ?? -1,
     Boolean(configInterfaceWithVPC) && enabled
@@ -48,6 +54,7 @@ export const useVPCConfigInterface = (
   return {
     configInterfaceWithVPC,
     configs,
+    hasPublicConfigInterface,
     isVPCOnlyLinode,
     vpcLinodeIsAssignedTo,
   };

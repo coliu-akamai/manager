@@ -16,18 +16,18 @@ export const disableIPRow = (inputs: {
   } = inputs;
 
   if (
-    // regardless of interface type, if Linode is VPC only without a public interface, disable both public IPv4 and IPv6
+    // regardless of interface type, if Linode is "VPC only" without a public interface, disable both public IPv4 and IPv6
     (isVPCOnlyLinode && !hasPublicInterface) ||
     // For Linode interfaces without any interfaces, disable both public IPv4 and IPv6
-    // We exclude this check for legacy interfaces bc it doesn't always apply - some Linodes without interfaces may still have public connectivity
-    // (see comment at lines 275-277 in LinodeCreate/utilities.ts getInterfacePayload)
+    // We exclude this check for legacy interfaces bc it doesn't always apply - Linodes without interfaces will still have public connectivity
+    // (see comment at lines 275-277 in LinodeCreate/utilities.ts getInterfacePayload / M3-10105 for clarity)
     (isLinodeInterface && !hasInterfaces)
   ) {
     return ipType === 'Public – IPv4' || ipType === 'Public – IPv6 – SLAAC';
   }
 
   if (
-    // Linode Interface without a public interface will not have public IPv6 connectivity
+    // Linode Interfaces without a public interface will not have public IPv6 connectivity
     (isLinodeInterface && !hasPublicInterface) ||
     // if a legacy config has interfaces but doesn't have a public interface, it will not have public IPv6 connectivity
     (hasInterfaces && !hasPublicInterface)
@@ -35,5 +35,6 @@ export const disableIPRow = (inputs: {
     return ipType === 'Public – IPv6 – SLAAC';
   }
 
+  // "VPC only" but has public interface: only disable public IPv4
   return isVPCOnlyLinode && ipType === 'Public – IPv4';
 };

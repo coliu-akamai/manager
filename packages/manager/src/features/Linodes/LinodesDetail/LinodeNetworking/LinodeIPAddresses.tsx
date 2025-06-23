@@ -79,7 +79,7 @@ export const LinodeIPAddresses = (props: LinodeIPAddressesProps) => {
 
   const isLinodeInterface = linode?.interface_generation === 'linode';
 
-  const { hasLinodeInterfaces, hasPublicInterface, isVPCOnlyLinode } =
+  const { hasInterfaces, hasPublicInterface, isVPCOnlyLinode } =
     useDetermineReachableIPs({
       isLinodeInterface,
       linodeId: linodeID,
@@ -253,7 +253,7 @@ export const LinodeIPAddresses = (props: LinodeIPAddressesProps) => {
                     <LinodeIPAddressRow
                       {...ipDisplay}
                       {...handlers}
-                      hasLinodeInterfaces={hasLinodeInterfaces}
+                      hasInterfaces={hasInterfaces}
                       hasPublicInterface={hasPublicInterface}
                       isLinodeInterface={isLinodeInterface}
                       isVPCOnlyLinode={isVPCOnlyLinode}

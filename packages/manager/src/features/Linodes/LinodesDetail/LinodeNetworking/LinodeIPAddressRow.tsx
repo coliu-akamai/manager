@@ -30,7 +30,7 @@ export interface IPAddressRowHandlers {
 }
 
 interface LinodeIPAddressRowProps extends IPAddressRowHandlers, IPDisplay {
-  hasLinodeInterfaces?: boolean;
+  hasInterfaces?: boolean;
   hasPublicInterface?: boolean;
   isLinodeInterface: boolean;
   isVPCOnlyLinode: boolean;
@@ -47,7 +47,7 @@ export const LinodeIPAddressRow = (props: LinodeIPAddressRowProps) => {
     handleOpenEditRDNS,
     handleOpenEditRDNSForRange,
     handleOpenIPV6Details,
-    hasLinodeInterfaces,
+    hasInterfaces,
     hasPublicInterface,
     isLinodeInterface,
     isVPCOnlyLinode,
@@ -66,7 +66,7 @@ export const LinodeIPAddressRow = (props: LinodeIPAddressRowProps) => {
   );
 
   const disabled = disableIPRow({
-    hasLinodeInterfaces,
+    hasInterfaces,
     hasPublicInterface,
     isLinodeInterface,
     ipType: type,

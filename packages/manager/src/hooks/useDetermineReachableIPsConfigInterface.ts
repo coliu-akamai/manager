@@ -39,6 +39,10 @@ export const useDetermineReachableIPsConfigInterface = (
     )
   );
 
+  const hasConfigInterfaces =
+    configWithVPCInterface?.interfaces &&
+    configWithVPCInterface?.interfaces.length > 0;
+
   const { data: vpcLinodeIsAssignedTo } = useVPCQuery(
     configInterfaceWithVPC?.vpc_id ?? -1,
     Boolean(configInterfaceWithVPC) && enabled
@@ -54,6 +58,7 @@ export const useDetermineReachableIPsConfigInterface = (
   return {
     configInterfaceWithVPC,
     configs,
+    hasConfigInterfaces,
     hasPublicConfigInterface,
     isVPCOnlyLinode,
     vpcLinodeIsAssignedTo,

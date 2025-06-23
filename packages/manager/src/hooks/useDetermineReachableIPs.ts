@@ -5,9 +5,6 @@ import { useDetermineReachableIPsConfigInterface } from './useDetermineReachable
 /**
  * Returns outputs that can be used to determine if a Linode's public IPv4 and IPv6 ips are reachable.
  *
- * NOTE: due to the complexity of configuration profiles/interfaces, for legacy config interfaces,
- * usage of this hook maintains functionality of determining IP reachability based on whether a Linode is a "VPC only Linode"
- *
  * Returns the VPC Interface and VPC the Linode with the given ID is assigned to. Determines
  * whether to use config profile related queries or Linode Interface related queries
  * based on the types of interfaces this Linode is using
@@ -28,6 +25,7 @@ export const useDetermineReachableIPs = (inputs: {
   const {
     configInterfaceWithVPC,
     configs,
+    hasConfigInterfaces,
     hasPublicConfigInterface,
     isVPCOnlyLinode: isVPCOnlyLinodeConfig,
     vpcLinodeIsAssignedTo: vpcLinodeIsAssignedToConfig,
@@ -39,7 +37,7 @@ export const useDetermineReachableIPs = (inputs: {
 
   return {
     configs, // undefined if this Linode is using Linode Interfaces
-    hasLinodeInterfaces, // undefined if this Linode is using config interfaces. Is only used when the Linode is known to be using Linode Interfaces
+    hasInterfaces: hasConfigInterfaces ?? hasLinodeInterfaces,
     hasPublicInterface: hasPublicConfigInterface ?? hasPublicLinodeInterface,
     interfaceWithVPC: linodeInterfaceWithVPC ?? configInterfaceWithVPC,
     isVPCOnlyLinode,

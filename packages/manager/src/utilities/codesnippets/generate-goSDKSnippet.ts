@@ -60,7 +60,6 @@ export function generateGoLinodeSnippet(config: CreateLinodeRequest): string {
       .join(', ');
     snippet += `        Tags: []string{${tags}},\n`;
   }
-
   if (config.stackscript_id) {
     snippet += `        StackScriptID: ${config.stackscript_id},\n`;
   }
@@ -69,6 +68,12 @@ export function generateGoLinodeSnippet(config: CreateLinodeRequest): string {
   }
   if (config.firewall_id) {
     snippet += `        FirewallID: ${config.firewall_id},\n`;
+  }
+  if (config.interface_generation) {
+    snippet += `        InterfaceGeneration: "${escapeGoString(config.interface_generation)}",\n`;
+  }
+  if (config.interfaces) {
+    // todo
   }
   // Add metadata if present
   if (config.metadata && config.metadata.user_data) {
